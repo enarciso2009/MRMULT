@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.pk %}Editar Visitante{% else %}Novo Visitante{% endif %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css %}">
+</head>
+<body>
+<div class="container mt-4">
+    <h2 class="mb-3">
+        {% fi form.instance.pk %}Editar Visitante{% else %}Novo Visitante(% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="mt3 d-flex gap-2">
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="{% url 'visitante:lista_visitante' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+   <h2>Refeições Cadastradas</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+                                <td><b>ID</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Valor</b></td>
+                                <td><b>Data Inicio</b></td>
+                                <td><b>Hora Inicio</b></td>
+                                <td><b>Data Final</b></td>
+                                <td><b>Hora Final</b></td>
+                                <td><b>Empresa</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for refeicao in refeicao %}
+                                    <tr class="table-warning">
+                                        <td>{{ refeicao.id_ref }}</td>
+                                        <td>{{ refeicao.nome }}</td>
+                                        <td>{{ refeicao.valor }}</td>
+                                        <td>{{ refeicao.data_inicio }}</td>
+                                        <td>{{ refeicao.hora_inicio }}</td>
+                                        <td>{{ refeicao.data_fim }}</td>
+                                        <td>{{ refeicao.hora_fim }}</td>
+                                        <td>{{ refeicao.empresa.id }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+                    <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

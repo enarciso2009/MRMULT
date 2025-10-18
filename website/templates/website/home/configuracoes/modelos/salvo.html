@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+   <h2>Parâmetro Cadastrado</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+                                <td><b>ID</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>mod_credito_usu</b></td>
+                                <td><b>mod_credito_visi</b></td>
+                                <td><b>mod_padrao_usu</b></td>
+                                <td><b>mod_padrao_visi</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for par in parametro %}
+                                    <tr class="table-warning">
+                                        <td>{{ par.id_param }}</td>
+                                        <td>{{ par.nome }}</td>
+                                        <td>{{ par.mod_credito_usu }}</td>
+                                        <td>{{ par.mod_credito_visi }}</td>
+                                        <td>{{ par.mod_padrao_usu }}</td>
+                                        <td>{{ par.mod_padrao_visi }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+                    <a href="/home"> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

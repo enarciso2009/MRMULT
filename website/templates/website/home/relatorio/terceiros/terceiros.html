@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitório</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+
+</head>
+<body>
+
+    <h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Terceirizados Cadastrados</h1>
+
+    <table class="table table-hover" width="100%" border="1">
+        <colgroup>
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+            <col width="10%">
+
+        </colgroup>
+        <thead class="table-success">
+            <tr>
+                <th><b>Matricula</b></th>
+                <th><b>Nome</b></th>
+                <th><b>empresa</b></th>
+                <th><b>Documento</b></th>
+                <th><b>Credencial</b></th>
+                <th><b>Data Inicio</b></th>
+                <th><b>Hora Inicio</b></th>
+                <th><b>Data Termino</b></th>
+                <th><b>Hora Termino</b></th>
+                <th><b>Visitado</b></th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in terc %}
+                <tr class="table-light">
+                    <td>{{ e.matricula }}</td>
+                    <td>{{ e.nome }}</td>
+                    <td>{{ e.empresa }}</td>
+                    <td>{{ e.documento }}</td>
+                    <td>{{ e.credencial }}</td>
+                    <td>{{ e.data_inicio }}</td>
+                    <td>{{ e.hora_inicio }}</td>
+                    <td>{{ e.data_fim }}</td>
+                    <td>{{ e.hora_fim }}</td>
+                    <td>{{ e.func.nome}}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex gap-3 px-3">
+        <a href="/home" class="btn btn-link">Voltar</a>
+        <button onclick="window.print()" class="btn btn-link">Imprimir</button>
+    </div>
+</body>
+</html>

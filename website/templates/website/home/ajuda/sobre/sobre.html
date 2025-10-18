@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <title>Sobre</title>
+    </head>
+</head>
+<body>
+
+<div class="tab-content mt-4" style="background-color: #a2e436">
+    <td><h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Informações Módulo Refeitorio MR</h1>
+        <h5>
+ <!-- Nome do usuario logado -->
+                    {% if user.is_authenticated %}
+                    <span class="navbar-text fw-bold ms-auto me-3" style="color: black; padding-top: 2rem; padding-botton: 2rem; padding-left: 110rem;">
+                        Olá, {{ user.get_full_name|default:user.username }}
+                        </span>
+                    {% endif %}
+    </h5>
+    </td>
+</div>
+    <script src="{% static 'scripts.js' %}"></script>
+
+<div class="tab-content mt-4" style="margin-left: 45rem; margin-right: 45rem">
+            <div class="mb-3">
+                <td><h5 style="font-size: 1rem; text-align: center">Todos os direitos reservados.</h5></td>
+                <p>Este aplicativo e sua interface de usuário são protegidos</p>
+                <p>por marcas registradas e outros direitos de propriedade intelectual
+                <p>no Brasil e em outros países. A reprodução ou distribuição não
+                <p>autorizada deste programa, ou de qualquer parte dele, pode resultar
+                <p>em severas penalidades civis e criminais e será processada na máxima
+                <p>extensão possível nos termos da<a class="dropdown-item" href="relatorio/funcionarios">Cadastro de Funcionarios</a>
+                                <a class="dropdown-item" href="relatorio/visitantes">Cadastro de Visitantes</a>
+                                <a class="dropdown-item" href="relatorio/terceiros">Cadastro de Terceiros</a> lei.</p>
+            </div>
+</div>
+            <br>
+            <br>
+            <div>
+                <a href="/home/#"> <button type="submit" name="voltar" class="btn btn-link disable" style="margin-left: 57rem">Voltar</button></a>
+            </div>
+</body>
+
+</html>

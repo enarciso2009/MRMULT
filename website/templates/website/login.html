@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'myconf.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <title>Módulo Refeitório</title>
+    </head>
+<body>
+        <div class="tab-content mt-4" style="background-color: #a2e436">
+            <td><h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Sistema MR - Login</h1></td>
+        </div>
+
+        <form method="post" class="login" name="login">
+        {% csrf_token %}
+
+        <div class="tab-content mt-4" style="margin-left: 50rem; margin-right: 50rem">
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" required type="text" name="username" maxlength="15" id="username" placeholder="Usuário" size="30"></td>
+            </div>
+            <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" required type="password" name="password" maxlength="30" id="password" placeholder="Senha" size="30"></td>
+            </div>
+        </div>
+            <script src="{% static 'requerido.js' %}"></script>
+            <br>
+            <br>
+        <div>
+             <input type="submit" value="Login" class="btn btn-success" style="margin-left: 57rem">
+
+        </div>
+
+    </form>
+</body>
+</html>

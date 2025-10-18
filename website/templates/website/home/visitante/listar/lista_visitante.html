@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Visitantes Cadastrados</h2>
+
+        <table class="table table-hover">
+            <thead class="table-sucess">
+                <tr>
+                    <th>Matricula</th>
+                    <th>Nome</th>
+                    <th>Documento</th>
+                    <th>Credencial</th>
+                    <th>Visitado</th>
+                    <th>Grupo de Refeição</th>
+                    <th>Data Inicio</th>
+                    <th>Hora Inicio</th>
+                    <th>Data Final</th>
+                    <th>Hora Final</th>
+                </tr>
+            </thead>
+        <tbody>
+            {% for vis in visitante %}
+                <tr class="table-warning">
+                    <td>{{ vis.matricula }}</td>
+                    <td>
+                        <a href="{% url 'visitante:editar_visitante' vis.id %}">
+                            {{ vis.nome }}
+                        </a>
+                    </td>
+
+                    <td>{{ vis.documento }}</td>
+                    <td>{{ vis.credencial }}</td>
+                    <td>{{ vis.func.nome|default:"-" }}</td>
+                    <td>{{ vis.grup_ref.nome|default:"-" }}</td>
+                    <td>{{ vis.data_inicio }}</td>
+                    <td>{{ vis.hora_inicio }}</td>
+                    <td>{{ vis.data_fim }}</td>
+                    <td>{{ vis.hora_fim }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <div class="d-flex gap-3">
+            <a href="/home/visitante" class="btn btn-link">Voltar</a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

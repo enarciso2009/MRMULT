@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+   <h2>Visitantes Cadastrados</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+
+                            <tr class="table-success">
+                                <td><b>Matricula</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Documento</b></td>
+                                <td><b>Credencial</b></td>
+                                <td><b>Visitado</b></td>
+                                <td><b>Grupo de Refeição</b></td>
+                                <td><b>Data Inicio</b></td>
+                                <td><b>Hora Inicio</b></td>
+                                <td><b>Data Final</b></td>
+                                <td><b>Hora Final </b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for vis in visitante %}
+                                    <tr class="table-warning">
+                                        <td>{{ vis.matricula }}</td>
+                                        <td>
+                                            <a href="{% url 'visitante: visitante' vis.id %}">
+                                                {{ vis.nome }}
+                                            </a>
+                                        </td>
+                                        <td>{{ vis.documento }}</td>
+                                        <td>{{ vis.credencial }}</td>
+                                        <td>{{ vis.func.nome }}</td>
+                                        <td>{{ vis.grup_ref.nome }}</td>
+                                        <td>{{ vis.data_inicio }}</td>
+                                        <td>{{ vis.hora_inicio }}</td>
+                                        <td>{{ vis.data_fim }}</td>
+                                        <td>{{ vis.hora_fim }}</td>
+                                    </tr>
+                                {%endfor %}
+
+                       </tbody>
+                    </table>
+                   <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

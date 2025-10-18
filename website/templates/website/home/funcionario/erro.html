@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Erro - Módulo Refeitório</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            text-allign: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 10%;
+            display: inline-block;
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d9534f;
+            font-size: 26px;
+        }
+        p {
+            color: #333;
+            font-size: 18px;
+            margin: 15px 0;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decorator: none;
+            background-color: #0275d8;
+            color: white;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #025aa5;
+        }
+        .icon {
+            font-size: 60px;
+            color: #d9534f;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon"></div>
+        <h1>Ocorreu um erro!</h1>
+        <p>{{ mensagem|default:"algo inesperado aconteceu. Por favor, tente novamente." }}</p>
+        <a href="javascript:history.black()" class="btn">Voltar</a>
+    </div>
+</body>
+</html>

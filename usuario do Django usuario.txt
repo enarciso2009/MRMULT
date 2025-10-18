@@ -1,0 +1,5 @@
+usuario do Django
+usuario admin
+email: enarcisolinux@gmail.com
+senha: Ev323232@
+

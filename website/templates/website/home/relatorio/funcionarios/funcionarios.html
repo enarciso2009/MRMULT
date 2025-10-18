@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+
+</head>
+<body>
+
+<h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Funcionarios Cadastrado</h1>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+
+
+                                <td><b>Matricula</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Data Admissão</b></td>
+                                <td><b>Departamento</b></td>
+                                <td><b>Centro de Custo</b></td>
+                                <td><b>Cargo</b></td>
+                                <td><b>Documento</b></td>
+                                <td><b>Credencial</b></td>
+                                <td><b>Ativo</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for e in func %}
+                                    <tr class="table-light">
+
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.admissao }}</td>
+                                        <td>{{ e.departamento }}</td>
+                                        <td>{{ e.centro_de_custo }}</td>
+                                        <td>{{ e.cargo }}</td>
+                                        <td>{{ e.documento }}</td>
+                                        <td>{{ e.credencial }}</td>
+                                        <td>{{ e.ativo }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+
+                    <a href="/home"> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+                    <button onclick="window.print()" name="imprimir" class="btn btn-link disable">Imprimir</button>
+</body>
+</html>

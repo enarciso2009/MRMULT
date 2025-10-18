@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <!-- <link rel="stylesheet" type="text/css" href="{% static 'myconf.css' %}"> -->
+
+        <title>Módulo Refeitório</title>
+</head>
+<body>
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
+            <div class="container-fluid">
+
+                <img src="{% static 'refeicao.png'%}" alt="" width="6%">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                        aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cadastro</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#" target="_self">Funcionário</a>
+                                <a class="dropdown-item" href="/home/visitante/#">Visitantes</a>
+                                <a class="dropdown-item" href="/home/terceiro/#">Terceiros</a>
+                                <a class="dropdown-item" href="/home/equipamento">Equipamentos</a>
+                                <a class="dropdown-item" href="/home/refeicao/#">Refeições</a>
+                                <a class="dropdown-item" href="/home/grupo_refeicao/#">Grupos de Refeições</a>
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relatórios</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/relatorio/monitoramento/">Monitoramento</a>
+                                <a class="dropdown-item" href="/home/relatorio/refeicoes">Refeições</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_func">Totalizado por Funcionario</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_refeicao">Totalizado por Refeição</a>
+                                <a class="dropdown-item" href="/home/relatorio/funcionarios">Cadastro de Funcionarios</a>
+                                <a class="dropdown-item" href="/home/relatorio/visitantes">Cadastro de Visitantes</a>
+                                <a class="dropdown-item" href="/home/relatorio/terceiros">Cadastro de Terceiros</a>
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Configurações</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/configuracoes/logins/#">Logins</a>
+                                <a class="dropdown-item" href="#">Permissões</a>
+                                <a class="dropdown-item" href="/home/configuracoes/modelos">Modelo Refeições</a>
+                                <a class="dropdown-item" href="#">Créditos Refeições</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Ajuda</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/ajuda/sobre/#">Sobre</a>
+                            </div>
+                        </li>
+                         <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Sair</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/logout">Sair</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- Nome do usuario logado -->
+                    {% if user.is_authenticated %}
+                    <span class="navbar-text fw-bold ms-auto me-3" style="color: black;">
+                        Olá, {{ user.get_full_name|default:user.username }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <script src="{% static 'scripts.js' %}"></script>
+<h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Cadastro de Funcionarios</h1>
+
+<form method="post" class="funcionario" name="func" style="margin-left: 35rem; margin-right: 35rem">
+    {% csrf_token %}
+ <!-- Abas -->
+<ul class="nav nav-tabs" id="formTabs" role="tablist" >
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pessoais" type="button">Dados Pessoais</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#refeicao" type="button">Dados Refeições</button>
+    </li>
+</ul>
+
+    <!-- Conteúdo das Abas -->
+    <div class="tab-content mt-4">
+
+        <!-- Aba Dados Pessoais -->
+        <div class="tab-pane fade show active" id="pessoais">
+            <div class="mb-3">
+                <td><input type="text" name="matricula" maxlength="15" id="matricula" placeholder="Matricula" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="text" name="nome" maxlength="100" id="nome" placeholder="Nome" size="70" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="date" name="admissao" id="id_admissao" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="text" name="departamento" maxlength="100" id="departamento" placeholder="Departamento" size="60" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="text" name="centro_de_custo" maxlength="100" id="centro_de_custo" placeholder="Centro de Custo" size="50" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="text" name="cargo" maxlength="50" id="cargo" placeholder="Cargo" size="40" required></td>
+            </div>
+            <div class="mb-3">
+                <td><input type="text" name="documento" maxlength="50" id="documento" placeholder="Documento" size="30" required></td>
+            </div>
+        </div>
+
+        <!-- Aba Dados da Refeicao  -->
+        <div class="tab-pane fade" id="refeicao">
+            <div class="mb-3">
+                <td><input type="text" name="credencial" maxlength="15" id="credencial" placeholder="Credencial" size="15" required></td>
+            </div>
+            <div class="mb-3">
+                <td><label style="font-size: 1rem">Grupo de Refeições</label></td>
+            </div>
+            <div class="mb-3">
+                <select style="text-align: center; padding:1.2rem 11.5rem" id="grupos_refeicao" name ="grupos_refeicao" required value={{grupos_refeicao}}
+                                {% for g in grupos_refeicao %}
+                                    <option value="{{g.id_grup}}"> {{g.id_grup}} - {{g.nome}}  </option>
+                                {%endfor%}
+                          </select>
+            </div>
+            <br>
+            <br>
+            <div class="mb-3">
+                <td><input type="text" name="ativo" maxlength="5" id="ativo" placeholder="Ativo" size="5" required></td>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'requerido.js' %}"></script>
+    <br>
+    <br>
+    <div style="display: flex; align-items: center">
+                <button style="margin-left: 15rem" type="incluir" value="incluir" name="incluir" class="btn btn-success">Incluir</button>
+                <button type="alterar" value="alterar" name="alterar" class="btn btn-warning">Alterar</button>
+                <button type="excluir" value="excluir" name="excluir" class="btn btn-outline-danger">Excluir</button>
+                <button type="consultar" value="consultar" name="consultar" class="btn btn-primary btn-sm">Consultar</button>
+    </div>
+</form>
+</body>
+</html>

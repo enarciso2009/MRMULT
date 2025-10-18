@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'myconf.css' %}">
+        <title>Módulo Refeitório</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
+            <div class="container-fluid">
+
+                <img src="{% static 'refeicao.png'%}" alt="" width="6%">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                        aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor03">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cadastro</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/funcionario/#" target="_self">Funcionário</a>
+                                <a class="dropdown-item" href="/home/visitante/#" target="_self">Visitantes</a>
+                                <a class="dropdown-item" href="/home/terceiro/#" target="_self">Terceiros</a>
+                                <a class="dropdown-item" href="/home/equipamento/#" target="_self">Equipamentos</a>
+                                <a class="dropdown-item" href="#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="/home/grupo_refeicao/#" target="_self">Grupos de Refeições</a>
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relatórios</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/relatorio/monitoramento/#" target="_self">Monitoramento</a>
+                                <a class="dropdown-item" href="/home/relatorio/refeicoes/#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_func/#" target="_self">Totalizado por Funcionario</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_refeicao/#" target="_self">Totalizado por Refeição</a>
+                                <a class="dropdown-item" href="/home/relatorio/funcionarios">Cadastro de Funcionarios</a>
+                                <a class="dropdown-item" href="/home/relatorio/visitantes">Cadastro de Visitantes</a>
+                                <a class="dropdown-item" href="/home/relatorio/terceiros">Cadastro de Terceiros</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Configurações</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/configuracoes/logins/#">Logins</a>
+                                <a class="dropdown-item" href="#">Permissões</a>
+                                <a class="dropdown-item" href="/home/configuracoes/modelos/#" target="_self">Modelo Refeições</a>
+                                <a class="dropdown-item" href="#">Créditos Refeições</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Ajuda</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/ajuda/sobre/#" target="_self">Sobre</a>
+                            </div>
+                        </li>
+                         <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Sair</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/logout" target="_self">Sair</a>
+                            </div>
+                        </li>
+                    </ul>
+                     <!-- Nome do usuario logado -->
+                    {% if user.is_authenticated %}
+                    <span class="navbar-text fw-bold ms-auto me-3" style="color: black;">
+                        Olá, {{ user.get_full_name|default:user.username }}
+                        </span>
+                    {% endif %}
+                </div>
+
+            </div>
+        </nav>
+
+        <script src="{% static 'scripts.js' %}"></script>
+
+        <form method="post" class="refeicao" name="refeicao">
+
+        <h1 style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Cadastro de Refeições</h1>
+         {% csrf_token %}
+        <div class="tab-content mt-4" style="margin-left: 35rem; margin-right: 35rem">
+            <!-- <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" required type="text" name="id_ref" maxlength="10" id="id_ref" placeholder="Id" size="5"></td>
+             </div> -->
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" required type="text" name="nome" maxlength="30" id="nome" placeholder="Refeição" size="30"></td>
+             </div>
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" required type="number" name="valor" step="0.01" maxlength="10" id="valor" placeholder="Valor" size="10"></td>
+             </div>
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" type="date" name="data_inicio" maxlength="10" id="data_inicio" required></td>
+             </div>
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" type="time" name="hora_inicio" id="hora_inicio" required></td>
+             </div>
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" type="date" name="data_fim" maxlength="10" id="data_fim"></td>
+             </div>
+             <div class="mb-3">
+                <td><input style="margin-left: 0.5rem" type="time" name="hora_fim" id="hora_fim" required></td>
+             </div>
+        </div>
+            <script src="{% static 'requerido.js' %}"></script>
+            <br>
+            <br>
+            <button style="margin-left: 50rem" type="incluir" value="incluir" name="incluir" class="btn btn-outline-success">Incluir</button>
+            <button type="alterar" value="alterar" name="alterar" class="btn btn-outline-warning">Alterar</button>
+            <button type="excluir" value="excluir" name="excluir" class="btn btn-outline-danger">Excluir</button>
+            <button type="consulta" value="consultar" name="consultar" class="btn btn-primary btn-sm">Consultar</button>
+        </form>
+    </body>
+</html>

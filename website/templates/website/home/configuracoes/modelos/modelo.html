@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'myconf.css' %}">
+        <title>Módulo Refeitório</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-light" data-bs-theme="light">
+            <div class="container-fluid">
+
+                <img src="{% static 'refeicao.png'%}" alt="" width="6%">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                        aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor03">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cadastro</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/funcionario/#" target="_self">Funcionário</a>
+                                <a class="dropdown-item" href="/home/visitante/#" target="_self">Visitantes</a>
+                                <a class="dropdown-item" href="/home/terceiro/#" target="_self">Terceiros</a>
+                                <a class="dropdown-item" href="/home/equipamento/#" target="_self">Equipamentos</a>
+                                <a class="dropdown-item" href="/home/refeicao/#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="/home/grupo_refeicao/#" target="_self">Grupos de Refeições</a>
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relatórios</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/relatorio/monitoramento/#" target="_self">Monitoramento</a>
+                                <a class="dropdown-item" href="/home/relatorio/refeicoes/#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_func/#" target="_self">Totalizado por Funcionario</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_refeicao/#" target="_self">Totalizado por Refeição</a>
+                                <a class="dropdown-item" href="/home/relatorio/funcionarios">Cadastro de Funcionarios</a>
+                                <a class="dropdown-item" href="/home/relatorio/visitantes">Cadastro de Visitantes</a>
+                                <a class="dropdown-item" href="/home/relatorio/terceiros">Cadastro de Terceiros</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Configurações</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/configuracoes/logins/#">Logins</a>
+                                <a class="dropdown-item" href="#">Permissões</a>
+                                <a class="dropdown-item" href="/home/configuracoes/modelos/#" target="_self">Modelo Refeições</a>
+                                <a class="dropdown-item" href="#">Créditos Refeições</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Ajuda</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/ajuda/sobre/#" target="_self">Sobre</a>
+                            </div>
+                        </li>
+                         <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Sair</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/logout" target="_self">Sair</a>
+                            </div>
+                        </li>
+                    </ul>
+                     <!-- Nome do usuario logado -->
+                    {% if user.is_authenticated %}
+                    <span class="navbar-text fw-bold ms-auto me-3" style="color: black;">
+                        Olá, {{ user.get_full_name|default:user.username }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <script src="{% static 'scripts.js' %}"></script>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <h1 style=" font-size: 4.5rem; text-align: center; padding-top: 3rem;">Modelo Refeicões</h1>
+
+                <table style="text-align:center; font-family:'open_sansregular'; font-size:2.5em; padding:0.5em; background-color: var(--bs-body-bg); color:black; margin: auto;">
+                    <tr>
+                        <td>
+                            <input class="form-control" type="text"  name="id_param" maxlength="10" id="id_param" placeholder="ID" value='1' style="text-align: cemter; padding:1.2rem 1.5rem">
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" name="nome" maxlength="100" id="nome" placeholder="Nome"  style="text-align: center; padding:1.2rem 11.5rem">
+                        </td>
+                    </tr>
+                </table>
+                <table style="text-align:center; font-family:'open_sansregular'; font-size:2.5em; padding:0.5em; background-color: var(--bs-body-bg); color:black; margin: auto;">
+                    <tr>
+                        <td></td>
+                        <td>
+                            <h3 style=" font-size: 2.5rem; padding-top: 3rem;">Parâmetros</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 4.5rem">
+
+                            <input class="form-check-input" type="checkbox" id="mod_padrao_usu" name="mod_padrao_usu">
+
+
+                            </td>
+                            <td style="padding-top: 4.5rem">
+                            <h3 class="form-check-label" for="padrao_usu">Apenas Contabilizar Refeições Usuários</h3>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+
+                            <input class="form-check-input" type="checkbox" id="mod_padrao_visi" name="mod_padrao_visi">
+                            </td>
+                            <td>
+                            <h3>Apenas Contabilizar Refeições Visitantes</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                             <input class="form-check-input" type="checkbox" id="mod_credito_usu" name="mod_credito_usu">
+                            </td>
+                            <td>
+                             <h3>Usar Credito de Refeições para Usuários</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                            <input class="form-check-input" type="checkbox" id="mod_credito_visi" name="mod_credito_visi">
+
+                            </td>
+                        <td>
+                            <h3>Usar Credito de Refeições para Visitante</h3>
+                        </td>
+                    </tr>
+                </table>
+                <table style="text-align:center; font-family:'open_sansregular'; font-size:2.5em; padding:0.5em; background-color: var(--bs-body-bg); color:black; margin: auto;">
+
+                    <tr>
+                        <td style="padding-top: 4.5rem">
+                            <!--<button type="incluir" value="incluir" name="incluir" class="btn btn-outline-success">Incluir</button>-->
+                            <button type="alterar" value="alterar" name="alterar" class="btn btn-outline-warning">Alterar</button>
+                            <!--<button type="excluir" value="excluir" name="excluir" class="btn btn-outline-danger">Excluir</button>-->
+                            <button type="consulta" value="consultar" name="consultar" class="btn btn-primary btn-sm" style="padding: 0.8rem 1.2rem; font-size:1.1rem;">Consultar</button>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </body>
+</html>

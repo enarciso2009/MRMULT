@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+
+<h2>Evento de Refeições de Funcionários</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+
+
+                                <td><b>Matricula</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Data</b></td>
+                                <td><b>Hora</b></td>
+                                <td><b>equip_nome</b></td>
+                                <td><b>Tipo_Refeicao</b></td>
+                                <td><b>Valor</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                                  {% for e in evento_cafe %}
+                                    <tr class="table-warning">
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_nome}}</td>
+                                        <td> {{ref_nome_1}} </td>
+                                        <td> {{ref_valor_1}} </td>
+                                    </tr>
+                                    {%endfor %}
+
+                                    {% for e in evento_almoco %}
+                                    <tr class="table-warning">
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_nome }}</td>
+                                        <td> {{ref_nome_3}} </td>
+                                        <td> {{ref_valor_3}} </td>
+                                    </tr>
+                                    {%endfor %}
+
+                         {% for e in evento_cafe_tarde %}
+                                    <tr class="table-warning">
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_nome }}</td>
+                                        <td> {{ref_nome_6}} </td>
+                                        <td> {{ref_valor_6}} </td>
+                                    </tr>
+                                    {%endfor %}
+                         {% for e in evento_jantar %}
+                                    <tr class="table-warning">
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_nome }}</td>
+                                        <td> {{ref_nome_9}} </td>
+                                        <td> {{ref_valor_9}} </td>
+                                    </tr>
+                                    {%endfor %}
+                         {% for e in evento_ceia %}
+                                    <tr class="table-warning">
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_nome }}</td>
+                                        <td> {{ref_nome_12}} </td>
+                                        <td> {{ref_valor_12}} </td>
+                                    </tr>
+                                    {%endfor %}
+
+
+                        </tbody>
+                    </table>
+                    <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+                    <button onclick="window.print()" name="imprimir" class="btn btn-link disable">Imprimir</button>
+</body>
+</html>

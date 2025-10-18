@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+    <Meta http-equiv="refresh" content="5" />
+</head>
+<body>
+
+<h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Evento de Refeições</h1>
+
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+
+
+                                <td><b>Matricula</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Data</b></td>
+                                <td><b>Hora</b></td>
+                                <td><b>equip_id</b></td>
+                                <td><b>equip_nome</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for e in evento %}
+                                    <tr class="table-warning">
+
+                                        <td>{{ e.matricula }}</td>
+                                        <td>{{ e.nome }}</td>
+                                        <td>{{ e.data }}</td>
+                                        <td>{{ e.hora }}</td>
+                                        <td>{{ e.equip_id }}</td>
+                                        <td>{{ e.equip_nome }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+
+                    <a href="/home"> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+   <h2>Equipamentos Cadastrados</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+                                <td><b>ID</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>IP</b></td>
+                                <td><b>MASK</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for equipamento in equipamento %}
+                                    <tr class="table-warning">
+                                        <td>{{ equipamento.id_equip }}</td>
+                                        <td>{{ equipamento.nome }}</td>
+                                        <td>{{ equipamento.ip }}</td>
+                                        <td>{{ equipamento.mask }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+                    <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

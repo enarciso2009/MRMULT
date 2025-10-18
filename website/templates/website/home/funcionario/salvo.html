@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+   <h2>Funcionários Cadastrados</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+                                <td><b>Matricula</b></td>
+                                <td><b>Nome</b></td>
+                                <td><b>Admissão</b></td>
+                                <td><b>Departamento</b></td>
+                                <td><b>Centro de Custo</b></td>
+                                <td><b>Cargo</b></td>
+                                <td><b>Documento</b></td>
+                                <td><b>credencial</b></td>
+                                <td><b>Grupo Refeição</b></td>
+                                <td><b>Ativo</b></td>
+                                <td><b>Empresa</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for func in funcionario %}
+                                    <tr class="table-warning">
+                                        <td>{{ func.matricula }}</td>
+                                        <td>{{ func.nome }}</td>
+                                        <td>{{ func.admissao }}</td>
+                                        <td>{{ func.departamento }}</td>
+                                        <td>{{ func.centro_de_custo }}</td>
+                                        <td>{{ func.cargo }}</td>
+                                        <td>{{ func.documento }}</td>
+                                        <td>{{ func.credencial }}</td>
+                                        <td>{{ func.grup_ref.nome }}</td>
+                                        <td>{{ func.ativo }}</td>
+                                        <td>{{ func.empresa.id }}</td>
+                                    </tr>
+                                {%endfor %}
+                       </tbody>
+                    </table>
+                   <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+</body>
+</html>

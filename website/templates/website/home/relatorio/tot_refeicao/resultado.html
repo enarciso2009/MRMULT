@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Módulo Refeitorio</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+</head>
+<body>
+
+<h2>Refeições Totalizado por Tipos de Refeicao</h2>
+
+                    <table class="table table-hover" width="100%" border="1">
+                        <colgroup>
+                            <col width="10%">
+                            <col width="30%">
+                            <col width="30%">
+                            <col width="20%">
+                            <col width="10%">
+
+                        </colgroup>
+                        <thead>
+                            <tr class="table-success">
+                                <td><b>Tipo de Refeição</b></td>
+                                <td><b>Quantidade</b></td>
+                                <td><b>valor da Refeicao</b></td>
+                                <td><b>Total</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                              <tr class="table-warning">
+                                {% for e in eve_0 %}
+                                     <td>{{ e }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="table-warning">
+                                {% for e in eve_1 %}
+                                     <td>{{ e }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="table-warning">
+                                {% for e in eve_2 %}
+                                     <td>{{ e }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="table-warning">
+                                {% for e in eve_3 %}
+                                     <td>{{ e }}</td>
+                                {% endfor %}
+                            </tr>
+                                  <tr class="table-warning">
+                                {% for e in eve_4 %}
+                                     <td>{{ e }}</td>
+                                {% endfor %}
+                            </tr>
+                             <tr class="table-warning">
+                            <td>Total Geral</td>
+                            <td> </td>
+                            <td> </td>
+                            <td> {{ tot_geral }} </td>
+
+
+
+
+                       </tbody>
+                    </table>
+
+                        <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
+                        <button onclick="window.print()" name="imprimir" class="btn btn-link disable">Imprimir</button>
+</body>
+</html>

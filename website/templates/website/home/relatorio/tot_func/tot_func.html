@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+        <title>Módulo Refeitório</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
+            <div class="container-fluid">
+
+                <img src="{% static 'refeicao.png'%}" alt="" width="6%">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                        aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor03">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Cadastro</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/funcionario/#" target="_self">Funcionário</a>
+                                <a class="dropdown-item" href="/home/visitante/#" target="_self">Visitantes</a>
+                                <a class="dropdown-item" href="/home/terceiro/#" target="_self">Terceiros</a>
+                                <a class="dropdown-item" href="/home/equipamento/#" target="_self">Equipamentos</a>
+                                <a class="dropdown-item" href="/home/refeicao/#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="/home/grupo_refeicao/#" target="_self">Grupos de Refeições</a>
+
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Relatórios</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/relatorio/monitoramento/#" target="_self">Monitoramento</a>
+                                <a class="dropdown-item" href="/home/relatorio/refeicoes/#" target="_self">Refeições</a>
+                                <a class="dropdown-item" href="#">Totalizado por Funcionario</a>
+                                <a class="dropdown-item" href="/home/relatorio/tot_refeicao/#" target="_self">Totalizado por Refeição</a>
+                                <a class="dropdown-item" href="/home/relatorio/funcionarios">Cadastro de Funcionarios</a>
+                                <a class="dropdown-item" href="/home/relatorio/visitantes">Cadastro de Visitantes</a>
+                                <a class="dropdown-item" href="/home/relatorio/terceiros">Cadastro de Terceiros</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Configurações</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/configuracoes/logins/#">Logins</a>
+                                <a class="dropdown-item" href="#">Permissões</a>
+                                <a class="dropdown-item" href="/home/configuracoes/modelos/#" target="_self">Modelo Refeições</a>
+                                <a class="dropdown-item" href="#">Créditos Refeições</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Ajuda</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/home/ajuda/sobre/#" target="_self">Sobre</a>
+                            </div>
+                        </li>
+                         <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Sair</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/logout" target="_self">Sair</a>
+                            </div>
+                        </li>
+                    </ul>
+                     <!-- Nome do usuario logado -->
+                    {% if user.is_authenticated %}
+                    <span class="navbar-text fw-bold ms-auto me-3" style="color: black;">
+                        Olá, {{ user.get_full_name|default:user.username }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <script src="{% static 'scripts.js' %}"></script>
+        <h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Relatório de Refeições Totalizado por Funcionário</h1>
+
+        <form method="post">
+            {% csrf_token %}
+        <div class="tab-content mt-4" style="margin-left: 35rem; margin-right: 35rem">
+            <div class="mb-3">
+                <td><h5 style="font-size: 1rem; text-align: center">Funcionário</h5></td>
+            </div>
+            <div class="mb-3">
+                 <td><select class="form-select" id="func" name="func" required value="func">
+                            {% for c in completo %}
+                              <option>{{c.nome}}</option>
+                            {%endfor%}
+                 </select>
+                    </td>
+            </div>
+            <div class="mb-3">
+                <td><h5 style="font-size: 1rem; text-align: center">Data Inicial</h5></td>
+            </div>
+            <div class="mb-3">
+                <td><input style="margin-left: 20rem" required type="date" name="data_inicio" id="form.data_inicio"></td>
+            </div>
+             <div class="mb-3">
+                <td><h5 style="font-size: 1rem; text-align: center">Data Final</h5></td>
+            </div>
+            <div class="mb-3">
+                <td><input style="margin-left: 20rem" required type="date" name="data_final" id="form.data_final"></td>
+            </div>
+        </div>
+            <script src="{% static 'requerido.js' %}"></script>
+            <br>
+                <button style="margin-left: 57rem" type="consultar" value="consultar" name="consultar" class="btn btn-outline-success">Consultar</button>
+
+        </form>
+    </body>
+</html>
