@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-(_m4@qg9s33^^0y25nnln7l(9bt)wujn=8#3ej6#9k13tdk!ql
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 # quando for usar outros computadores acessando esta maquina colocar o ip local da maquina e executar o manage.py com o comando python manage.py runserver 0.0.0.0:8080
 
 # Application definition
