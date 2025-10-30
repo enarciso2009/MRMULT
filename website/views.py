@@ -1,28 +1,22 @@
-import datetime
-from gc import get_objects
+from collections import defaultdict
 from django.contrib import messages
-from re import purge, template
-from statistics import pvariance
-from xml.dom import NoModificationAllowedErr
-
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.views import LoginView
 # validação de usuarios
-
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
-
 from django.http import HttpRequest, HttpResponseRedirect, Http404, HttpResponse
-from django.db.models import Sum, Count, Max, Min
-
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-
 import datetime
-from website.forms import TerceiroForm, EquipamentoForm, RefeicaoForm, FuncionarioForm, Grupo_RefeicaoForm, VisitanteForm, BuscaForm, EventoForm, ParametroForm
-from website.models import Terceiro, Equipamento, Refeicao, Funcionario, Grupo_Refeicao, Inter_grup_ref, Visitante, Evento, Parametro, Empresa
+from datetime import date, time, datetime
+from website.forms import UsuarioForm, TerceiroForm, EquipamentoForm, RefeicaoForm, FuncionarioForm, Grupo_RefeicaoForm, VisitanteForm, BuscaForm, EventoForm, ParametroForm
+from website.models import Terceiro, Equipamento, Refeicao, Funcionario, Grupo_Refeicao, Inter_grup_ref, Visitante, Evento, Parametro, Empresa, Profile, Usuario
+from website.decorators import grupo_required
+
+
 
 # criação de logins
 
@@ -43,10 +37,15 @@ class HomeViewer(TemplateView):
     template_name = 'website/home/home.html'
 
 
+def acesso_negado(requisicao):
+    return render(requisicao,
+                  template_name='website/acesso_negado.html')
+
 status = ''
 
 # Tela de Cadastro de Equipamentos
-@login_required
+#@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_equipamento(requisicao: HttpRequest):
     print(f'este é o GET = {requisicao.method == "GET"}')
     if requisicao.method == 'GET':
@@ -141,7 +140,7 @@ def cria_equipamento(requisicao: HttpRequest):
             return render(requisicao, template_name='website/home/equipamento/salvo.html', context={'equipamento': equipamento})
 
 # Tela de cadastro de Refeições
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_refeicao(requisicao: HttpRequest):
     #print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -233,7 +232,7 @@ def cria_refeicao(requisicao: HttpRequest):
 
 
 # Cadastro de Funcionarios
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_funcionario(requisicao: HttpRequest):
 
     user = requisicao.user
@@ -430,9 +429,9 @@ def cria_funcionario(requisicao: HttpRequest):
 
 
 # cadastro de Visitante
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_visitante(requisicao: HttpRequest):
-
+    import datetime
     user = requisicao.user
     print(f'este é o user: {user}')
     if user.is_superuser:
@@ -447,242 +446,401 @@ def cria_visitante(requisicao: HttpRequest):
             form = VisitanteForm()
             visitante = Visitante.objects.all()
             completo = Funcionario.objects.all()
-            grupo_refeicao = Grupo_Refeicao.objects.all()
-            for f in completo.values():
-                func = f['nome']
-                print(f'nome do funcionario = {func}')
-                func = func
-                for g in grupo_refeicao.values():
-                    id_grup_ref = g['id_grup_ref']
-            print(f'codigo do grupo = {id_grup_ref}')
-            grupo_ref = id_grup_ref
-
-            context = {
-                'form': form,
-                'completo': completo,
-                'grupo_refeicao': grupo_refeicao,
-                'hoje': datetime.date.today().isoformat(),
-                'func': func,
-                'grupo_ref': grupo_ref
-            }
-            return render(requisicao, template_name='website/home/visitante/visitante.html', context=context)
-
+            grupos = Grupo_Refeicao.objects.all()
         else:
             form = VisitanteForm(requisicao.POST)
             visitante = Visitante.objects.filter(empresa=empresa_usuario)
             completo = Funcionario.objects.filter(empresa=empresa_usuario)
-            grupo_refeicao = Grupo_Refeicao.objects.filter(empresa=empresa_usuario)
-            print(f'visitante: {visitante}')
-            print(f'completo: {completo}')
-            print(f'grupo de refeicao: {grupo_refeicao}')
-            '''
-            for f in completo.values():
-                func = f['nome']
-                print(f'nome do funcionario = {func}')
-                func = func
-                for g in grupo_refeicao.values():
-                    grup_ref = g['grup_ref']
-            print(f'codigo do grupo = {grup_ref}')
-            '''
+            grupos = Grupo_Refeicao.objects.filter(empresa=empresa_usuario)
 
-            context = {
-                'form': form,
-                'completo': completo,
-                'grupo_refeicao': grupo_refeicao,
-                'hoje': datetime.date.today().isoformat(),
+        context = {
+            'form': form,
+            'visitante': visitante,
+            'completo': completo,
+            'grupos_refeicao': grupos,
+            'hoje': datetime.date.today().isoformat(),
+            'empresa': empresa_usuario,
 
+        }
+        return render(
+            requisicao,
+            template_name='website/home/visitante/visitante.html',
+            context=context
+        )
+
+
+
+    elif requisicao.method == 'POST':
+        print('entrou no post')
+        if user.is_superuser:
+            form = VisitanteForm(requisicao.POST)
+            visitante = Visitante.objects.all()
+            completo = Funcionario.objects.all()
+            grupos = Grupo_Refeicao.objects.all()
+        else:
+            form = VisitanteForm(requisicao.POST)
+            visitante = Visitante.objects.filter(empresa=empresa_usuario)
+            completo = Funcionario.objects.filter(empresa=empresa_usuario)
+            grupos = Grupo_Refeicao.objects.filter(empresa=empresa_usuario)
+
+
+        # identifica qual o botao foi pressionado
+
+        if 'incluir' in requisicao.POST:
+            status = 'incluir'
+        elif 'alterar' in requisicao.POST:
+            status = 'alterar'
+        elif 'excluir' in requisicao.POST:
+            status = 'excluir'
+        elif 'consultar' in requisicao.POST:
+            status = 'consultar'
+        else:
+            status = None
+
+        print(f'este é o status = {status}')
+
+        if status == 'incluir':
+            print('entrou no incluir')
+            form = VisitanteForm(requisicao.POST)
+            if form.is_valid():
+                print('form valido criando o visitante')
+                visitante = form.save(commit=False)
+
+                # Associa campos automaticos
+                visitante.empresa = empresa_usuario # FK da empresa logada
+                visitante.grup_ref_id = requisicao.POST.get('grupos_refeicao') # id do grupo de refeicao
+                visitante.save()
+                print(f'visitante criado: {visitante}')
+                context = {'visitante': [visitante]}
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/salvo.html',
+                    context=context
+                )
+            else:
+                print('form invalido, erros')
+                print(f'este é o erro: {form.errors}')
+                # precisa retornar alguma resposta, mesmo que seja erro
+                context = {'form': form, 'erros': form.errors}
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/erro.html',
+                    context=context
+                )
+
+        if status == 'alterar':
+            print('entrou no alterar')
+            try:
+                matricula = requisicao.POST['matricula']
+                print(f'este é a matricula: {matricula}')
+                if not matricula:
+                    print('Nenhuma matricula recebida no POST')
+                    return render(
+                        requisicao,
+                        template_name='website/home/visitante/erro.html',
+                        context={'mensagem': 'Matricula do visitante não informado.'}
+                    )
+                visitante = Visitante.objects.get(matricula=matricula, empresa=empresa_usuario)
+                print(f'este é o visitante: {visitante}')
+                visitante = VisitanteForm(requisicao.POST, instance=visitante)
+                visitante.empresa = empresa_usuario # FK da empresa logada
+                visitante.grup_ref_id = requisicao.POST.get('grupos_refeicao') # id do grupo de refeicao
+                visitante.save()
+                if user.is_superuser:
+                    visitante = Visitante.objects.all()
+                else:
+                    visitante = Visitante.objects.filter(empresa=empresa_usuario)
+
+                context = {
+                    'visitante': visitante,
+                }
+
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/salvo.html',
+                    context=context
+                )
+            except Visitante.DoesNotExist:
+                print(f'Visitante "{matricula}" não encontrada para a empresa {empresa_usuario}.')
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/erro.html',
+                    context={'mensagem': f'Visitante da matricula "{matricula}" não encontrado.'}
+                )
+            except Exception as e:
+                print(f'Erro inesperado na tentativa de alterar o visitante: {str(e)}')
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/erro.html',
+                    context={'mensagem': f'Ocorreu um erro na tentativa de alterar o visitante {str(e)}'}
+                )
+
+        if status == 'excluir':
+            print('entrou no excluir')
+            try:
+                matricula = requisicao.POST.get('matricula')
+                if not matricula:
+                    print('Nenhuma matricula foi recebida no POST.')
+                    return render(
+                        requisicao,
+                        template_name='website/home/visitante/erro.html',
+                        context={'mensagem': 'Matricula do funcionario não infomado.'}
+                    )
+                visitante = Visitante.objects.get(matricula=matricula, empresa=empresa_usuario)
+                print(f'estes são os dados do visitante {visitante}')
+
+                # Deleta o visitante não precisa apagar o grupo de refeicao vinculado na tabela de Grupo_refeicao
+                visitante.delete()
+                if user.is_superuser:
+                    visitante = Visitante.objects.all()
+                else:
+                    visitante = Visitante.objects.filter(empresa=empresa_usuario)
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/salvo.html',
+                    context={'visitante': visitante}
+                )
+            except Visitante.DoesNotExist:
+                print(f'Visitante "{matricula}" não encontrado para a empresa {empresa_usuario}.')
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/erro.html',
+                    context={'mensagem': f'Visitante "{matricula}" não encontrada.'}
+                )
+            except Exception as e:
+                print(f'Erro inesperado ao excluir o visitante: {e}')
+                return render(
+                    requisicao,
+                    template_name='website/home/visitante/erro.html',
+                    context={'mensagem': f'Ocorreu um erro ao excluir o visitante {str(e)}'}
+                )
+
+        if status == 'consultar':
+            print('entrou no consultar')
+            user = requisicao.user
+            if user.is_superuser:
+                visitante = Visitante.objects.all()
+            else:
+                visitante = Visitante.objects.filter(empresa=empresa_usuario)
+
+            context= {
+                'visitante': visitante,
+                'empresa': empresa_usuario,
             }
             return render(
                 requisicao,
-                template_name='website/home/visitante/visitante.html',
+                template_name='website/home/visitante/salvo.html',
                 context=context
             )
 
-    elif requisicao.method == 'POST':
-        print('entrou no post')
-        print(f'este é o post = {requisicao.method == "POST"}')
-        form = VisitanteForm(requisicao.POST)
-        vis = requisicao.POST
-        for v in vis.values():
-            status = v
-        print(f'este é o status = {status}')
-
-        if status == 'incluir':
-            print('entrou no incluir')
-            matricula = requisicao.POST['matricula']
-            nome = requisicao.POST['nome']
-            documento = requisicao.POST['documento']
-            credencial = requisicao.POST['credencial']
-            data_inicio = requisicao.POST['data_inicio']
-            hora_inicio = requisicao.POST['hora_inicio']
-            data_fim = requisicao.POST['data_fim']
-            hora_fim = requisicao.POST['hora_fim']
-            func = requisicao.POST.get('func')
-            grupo_ref = requisicao.POST.get('grup_ref')
-            motivo = requisicao.POST.get('motivo')
-            visita =  matricula, nome, documento, credencial, data_inicio, data_fim, hora_inicio, hora_fim,func, grupo_ref, motivo
-            print(f'este é visita = {visita}')
-            print("func recebido no POST:", requisicao.POST.get('func'))
-            print("queryset disponível no form:", list(form.fields['func'].queryset.values_list('id', flat=True)))
-
-            if form.is_valid():
-                visitante = Visitante(**form.cleaned_data)
-                print(f'este é o visitantes = {visitante}')
-                visitante.save()
-                visitante = Visitante.objects.all()
-                context = {'visitante': visitante}
-                return render(requisicao, template_name='website/home/visitante/salvo.html', context=context)
-            else:
-                print(form.errors)
-
-        if status == 'alterar':
-            print('entrou no alterar')
-            matricula = requisicao.POST['matricula']
-            nome = requisicao.POST['nome']
-            documento = requisicao.POST['documento']
-            credencial = requisicao.POST['credencial']
-            data_inicio = '2024-05-31'
-            hora_inicio = requisicao.POST['hora_inicio']
-            data_fim = requisicao.POST['data_fim']
-            hora_fim = requisicao.POST['hora_fim']
-            func = requisicao.POST.get('func')
-            grupo_ref = requisicao.POST.get('grup_ref')
-            motivo = requisicao.POST.get('motivo')
-            visita = matricula, nome, documento, credencial, data_inicio, data_fim, hora_inicio, hora_fim, func, grupo_ref, motivo
-            print(f'este é visita = {visita}')
-            matricula = requisicao.POST['matricula']
-            visitante = Visitante.objects.get(matricula=matricula)
-            visitante = VisitanteForm(requisicao.POST, instance=visitante)
-            visitante.save()
-            visitante = Visitante.objects.all()
-            return render(requisicao, template_name='website/home/visitante/salvo.html', context={'visitante': visitante})
-
-        if status == 'excluir':
-            print('entrou no excluir')
-            print(f'este é a requisicao.POST = {requisicao.POST}')
-            matricula = requisicao.POST['matricula']
-            matricula = int(matricula)
-            print(f'este é o id = {matricula}')
-            visitante = Visitante.objects.get(matricula=matricula)
-            print(f'exemplo da apostila {visitante}')
-            visitante.delete()
-            visitante = Visitante.objects.all()
-            return render(
-                requisicao,
-                template_name='website/home/visitante/salvo.html',
-                context={'visitante': visitante}
-            )
-
-
-        if status == 'consultar':
-            print('entrou no consultar')
-            visitante = Visitante.objects.all()
-            return render(requisicao, template_name='website/home/visitante/salvo.html', context={'visitante': visitante})
-
 #Cadastro de Terceiro
 
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_terceiro(requisicao: HttpRequest):
+    import datetime
+    user = requisicao.user
+    print(f'este é o user: {user}')
+    if user.is_superuser:
+        empresa_usuario = None
+    else:
+        empresa_usuario = getattr(user.profile, 'empresa', None)
+    print(f'este é a empresa_usuario: {empresa_usuario}')
+
     if requisicao.method == 'GET':
         print('entrou no Get do terceiro')
-        completo = Funcionario.objects.all()
-        grupo_refeicao = Grupo_Refeicao.objects.all()
-        for f in completo.values():
-            func = f['nome']
-        print(f'nome do funcionario = {func}')
-        func = func
-        for g in grupo_refeicao.values():
-            id_grup_ref = g['id_grup_ref']
-        print(f'codigo do grupo = {id_grup_ref}')
-        grupo_ref = id_grup_ref
+        if user.is_superuser:
+            form = TerceiroForm()
+            terceiro = Terceiro.objects.all()
+            completo = Funcionario.objects.all()
+            grupos_refeicao = Grupo_Refeicao.objects.all()
+        else:
+            form = VisitanteForm(requisicao.POST)
+            terceiro = Terceiro.objects.filter(empresa=empresa_usuario)
+            completo = Funcionario.objects.filter(empresa=empresa_usuario)
+            grupos_refeicao = Grupo_Refeicao.objects.filter(empresa=empresa_usuario)
 
-        form = TerceiroForm()
         context = {
             'form': form,
+            'terceiro': terceiro,
             'completo': completo,
-            'grupo_refeicao': grupo_refeicao,
-            'func': func,
-            'grupo_ref': grupo_ref
+            'grupos_refeicao': grupos_refeicao,
+            'hoje': datetime.date.today().isoformat(),
+            'empresa': empresa_usuario,
         }
-        return render(requisicao, template_name='website/home/terceiro/terceiro.html', context=context)
+        return render(
+            requisicao,
+            template_name='website/home/terceiro/terceiro.html',
+            context=context
+        )
+
     elif requisicao.method == 'POST':
         print('entrou no post')
-        print(f'este é o post = {requisicao.method == "POST"}')
-        form = TerceiroForm(requisicao.POST)
-        ter = requisicao.POST
-        for t in ter.values():
-            status = t
+        if user.is_superuser:
+            form = TerceiroForm(requisicao.POST)
+            terceiro = Terceiro.objects.all()
+            completo = Funcionario.objects.all()
+            grupos_refeicao = Grupo_Refeicao.objects.all()
+        else:
+            form = TerceiroForm(requisicao.POST)
+            terceiro = Terceiro.objects.filter(empresa=empresa_usuario)
+            completo = Funcionario.objects.filter(empresa=empresa_usuario)
+            grupos_refeicao = Grupo_Refeicao.objects.filter(empresa=empresa_usuario)
+
+        # identifica qual o botao foi pressionado
+
+        if 'incluir' in requisicao.POST:
+            status = 'incluir'
+        elif 'alterar' in requisicao.POST:
+            status = 'alterar'
+        elif 'excluir' in requisicao.POST:
+            status = 'excluir'
+        elif 'consultar' in requisicao.POST:
+            status = 'consultar'
+        else:
+            status = None
+
         print(f'este é o status = {status}')
 
         if status == 'incluir':
             print('entrou no incluir')
-            matricula = requisicao.POST['matricula']
-            nome = requisicao.POST['nome']
-            documento = requisicao.POST['documento']
-            empresa = requisicao.POST['empresa']
-            credencial = requisicao.POST['credencial']
-            data_inicio = requisicao.POST['data_inicio']
-            hora_inicio = requisicao.POST['hora_inicio']
-            data_fim = requisicao.POST['data_fim']
-            hora_fim = requisicao.POST['hora_fim']
-            func = requisicao.POST.get('func')
-            grupo_ref = requisicao.POST.get('grup_ref')
-            terc =  matricula, nome, empresa, documento, credencial, data_inicio, data_fim, hora_inicio, hora_fim,func, grupo_ref
-            print(f'este é terc = {terc}')
-            print("func recebido no POST:", requisicao.POST.get('func'))
-            print("queryset disponível no form:", list(form.fields['func'].queryset.values_list('id', flat=True)))
-
+            form = TerceiroForm(requisicao.POST)
             if form.is_valid():
-                terceiro = Terceiro(**form.cleaned_data)
-                print(f'este é o terceiro = {terceiro}')
+                print('form valido criando o terceiro')
+                terceiro = form.save(commit=False)
+
+                # Associa campos automaticos
+
+                terceiro.empresa = empresa_usuario # FK da empresa logada
+                terceiro.grup_ref_id = requisicao.POST.get('grupos_refeicao') # id do grupo de refeicao
                 terceiro.save()
-                terceiro = Terceiro.objects.all()
-                context = {'terceiro': terceiro}
-                return render(requisicao, template_name='website/home/terceiro/salvo.html', context=context)
+                print(f'terceiro criado: {terceiro}')
+                context = {'terceiro': [terceiro]}
+
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/salvo.html',
+                    context=context
+                )
             else:
-                print(form.errors)
+                print("form invalido, errors")
+                print(f'este é o erro {form.errors}')
+
+                # Precisa retornar alguma resposta, mesmo que seja erro
+
+                context= {'form': form, 'erros': form.errors}
+
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/erro.html',
+                    context=context
+                )
 
         if status == 'alterar':
             print('entrou no alterar')
-            matricula = requisicao.POST['matricula']
-            nome = requisicao.POST['nome']
-            empresa = requisicao.POST['empresa']
-            documento = requisicao.POST['documento']
-            credencial = requisicao.POST['credencial']
-            data_inicio = '2024-05-31'
-            hora_inicio = requisicao.POST['hora_inicio']
-            data_fim = requisicao.POST['data_fim']
-            hora_fim = requisicao.POST['hora_fim']
-            func = requisicao.POST.get('func')
-            grupo_ref = requisicao.POST.get('grup_ref')
-            terc = matricula, nome, empresa, documento, credencial, data_inicio, data_fim, hora_inicio, hora_fim, func, grupo_ref
-            print(f'este é terc = {terc}')
-            matricula = requisicao.POST['matricula']
-            terceiro = Terceiro.objects.get(matricula=matricula)
-            terceiro = TerceiroForm(requisicao.POST, instance=terceiro)
-            terceiro.save()
-            terceiro = Terceiro.objects.all()
-            return render(requisicao, template_name='website/home/terceiro/salvo.html', context={'terceiro': terceiro})
+            try:
+                matricula = requisicao.POST['matricula']
+                print(f'este é a matricula: {matricula}')
+                if not matricula:
+                    print('Nenhuma matricula recebida no POST')
+                    return render(
+                        requisicao,
+                        template_name='website/home/terceiro/erro.html',
+                        context={'mensagem': 'Matricula do terceiro não informado.'}
+                    )
+                terceiro = Terceiro.objects.get(matricula=matricula, empresa=empresa_usuario)
+                terceiro = TerceiroForm(requisicao.POST, instance=terceiro)
+                print(f'este é o terceiro: {terceiro}')
+                terceiro.empresa = empresa_usuario #FK da empresa logada
+                terceiro.grup_ref_id = requisicao.POST.get('grupos_refeicao') # id do grupo de refeicao
+                terceiro.save()
+                if user.is_superuser:
+                    terceiro = Terceiro.objects.all()
+                else:
+                    terceiro = Terceiro.objects.filter(empresa=empresa_usuario)
+
+                context = {
+                    'terceiro': terceiro,
+                }
+
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/salvo.html',
+                    context=context
+                )
+            except Terceiro.DoesNotExist:
+                print(f'Terceiro "{matricula}" não encontrado para a empresa {empresa_usuario}.')
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/erro.html',
+                    context={'mensagem': f'Terceiro da matricula "{matricula}" não encontrado.'}
+                )
+            except Exception as e:
+                print(f'Erro inesperado na tentativa de alterar o Terceiro: {str(e)}')
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/erro.html',
+                    context={'mensagem': f'Ocorreu um erro na tentativa de alterar o terceiro {str(e)}'}
+                )
 
         if status == 'excluir':
             print('entrou no excluir')
-            print(f'este é a requisicao.POST = {requisicao.POST}')
-            matricula = requisicao.POST['matricula']
-            matricula = int(matricula)
-            print(f'este é o id = {matricula}')
-            terceiro = Terceiro.objects.get(matricula=matricula)
-            print(f'exemplo da apostila {terceiro}')
-            terceiro.delete()
-            terceiro = Terceiro.objects.all()
-            return render(requisicao, template_name='website/home/terceiro/salvo.html', context={'terceiro': terceiro})
+            try:
+                matricula = requisicao.POST.get('matricula')
+                if not matricula:
+                    print('Nenhuma matricula foi recebida no POST')
+                    return render(
+                        requisicao,
+                        template_name='website/home/terceiro/erro.html',
+                        context={'mensagem': 'Matricula do terceiro não informado.'}
+                    )
+                terceiro = Terceiro.objects.get(matricula=matricula, empresa=empresa_usuario)
+                print(f'estes são os dados do terceiro: {terceiro}')
+
+                # Deleta o terceiro, não precisa apagar o grupo de refeicao vinculado na tabela de Grupo_refeicao
+                terceiro.delete()
+                if user.is_superuser:
+                    terceiro = Terceiro.objects.all()
+                else:
+                    terceiro = Terceiro.objects.filter(empresa=empresa_usuario)
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/salvo.html',
+                    context={'terceiro': terceiro}
+                )
+            except Terceiro.DoesNotExist:
+                print(f'Terceiro "{matricula}" não encontrado para a empresa {empresa_usuario}.')
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/erro.html',
+                    context={'mensagem': f'Terceiro {matricula} não encontrado.'}
+                )
+            except Exception as e:
+                print(f'Erro inesperado ao excluir o terceiro: {e}')
+                return render(
+                    requisicao,
+                    template_name='website/home/terceiro/erro.html',
+                    context={'mensagem': f'Ocorreu um erro ao excluir o terceiro {str(e)}'}
+                )
 
         if status == 'consultar':
             print('entrou no consultar')
-            terceiro = Terceiro.objects.all()
-            return render(requisicao, template_name='website/home/terceiro/salvo.html', context={'terceiro': terceiro})
+            if user.is_superuser:
+                terceiro = Terceiro.objects.all()
+            else:
+                terceiro = Terceiro.objects.filter(empresa=empresa_usuario)
+
+            context = {
+                'terceiro': terceiro,
+                'empresa': empresa_usuario,
+            }
+            return render(
+                requisicao,
+                template_name='website/home/terceiro/salvo.html',
+                context=context
+            )
 
 # cadastro de Grupo de Refeicao
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_grupo_refeicao(requisicao: HttpRequest):
 
     user = requisicao.user
@@ -936,7 +1094,7 @@ def cria_grupo_refeicao(requisicao: HttpRequest):
                           context=context)
 
 
-@login_required
+@grupo_required(['Administrador', 'Operador'])
 def cria_busca(requisicao: HttpRequest):
     # print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -960,12 +1118,20 @@ def cria_busca(requisicao: HttpRequest):
 def monitoramento(requisicao: HttpRequest):
     #print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
-        print('entrou no get monitoramento')
-        form = EventoForm()
         import datetime
-        data_atual = datetime.date.today()
-        print(data_atual)
-        evento = Evento.objects.filter(data=(data_atual))
+        user = requisicao.user
+
+        print('entrou no get monitoramento')
+        if user.is_superuser:
+            form = EventoForm()
+            data_atual = datetime.date.today()
+            print(data_atual)
+            evento = Evento.objects.filter(data=(data_atual))
+        else:
+            empresa_usuario = getattr(user.profile, 'empresa', None)
+            form = EventoForm()
+            data_atual = datetime.date.today()
+            evento = Evento.objects.filter(data=(data_atual), empresa=empresa_usuario)
         context = {
             'form': form,
             'evento': evento
@@ -973,271 +1139,370 @@ def monitoramento(requisicao: HttpRequest):
         return render(requisicao, template_name='website/home/relatorio/monitoramento/resultado.html', context=context)
 
 
-# Relatorio de Refeições
-@login_required
+#extrair horario
+def extract_time(value):
+    """
+    Normaliza diferentes formatos de hora para um datetime.time ou retorno None.
+    Aceita:
+    - datetime.time -> retorna como está
+    - datetime.datetime -> retorna .time()
+    - str (ex: '08:00', '08:00:00') -> parseia
+    - list/tuple/set -> pega o primeiro elemento e tenta novamente
+    - None -> retorna None
+    """
+    if value is None:
+        return None
+
+    # já é time
+    if isinstance(value, time):
+        return value
+
+    #datetime -> pega time()
+    if isinstance(value, datetime):
+        return value.time()
+
+    # string: tenta parsear
+    if isinstance(value, str):
+        for fmt in ("%H:%M:%S", "%H:%M"):
+            try:
+                return datetime.strptime(value, fmt).time()
+            except ValueError:
+                continue
+    # se não conseguiu parsear, retorna None
+    return None
+
+    # Coleções -> pega o primeiro elemento
+    if isinstance(value, (list,tuple, set)):
+        try:
+            first = next(iter(value))
+            return extract_time(first)
+        except StopIteration:
+            return None
+
+    # Caso desconhecido
+    return None
+
+
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def relatorio_refeicoes(requisicao: HttpRequest):
-    #print(f"este é o GET = {requisicao.method == 'GET'}")
-    if requisicao.method == 'GET':
-        print('entrou no get relatorio de refeicoes')
+    user = requisicao.user
+    if user.is_superuser:
+        empresa_usuario =None
+    else:
+        empresa_usuario = getattr(user.profile, 'empresa', None)
+        print(f'Usuario logado: {user} Empresa: {empresa_usuario}')
+
+    if requisicao.method == "GET":
+        print('entrou no GET relatorio de refeicoes')
         form = EventoForm()
-        return render(requisicao, template_name='website/home/relatorio/refeicoes/refeicoes.html', context={'form': form})
+        context = {
+            'form': form,
+        }
+        return render(
+            requisicao,
+            template_name='website/home/relatorio/refeicoes/refeicoes.html',
+            context=context
+        )
     elif requisicao.method == 'POST':
-        print('entrou no post')
-        print(f'este é o post = {requisicao.method == "POST"}')
-        #print(f'este é o botao incluir {requisicao.form.get()}')
+        print('entrou no POST relatorio de refeicoes')
         form = EventoForm(requisicao.POST)
-        req = requisicao.POST
-        for r in req.values():
-            status = r
-        print(f'este é o status =  {status}')
+        acao = requisicao.POST.get('consultar') or ''
+        print(f'Ação identificada: {acao}')
 
+        if acao == 'consultar':
+           try:
+                data_inicial = requisicao.POST.get('data_inicio')
+                data_final = requisicao.POST.get('data_final')
 
-        if status == 'consultar':
-            print('entrou no consultar')
-            print(f'este é o post {requisicao.POST}')
-            data_inicial = requisicao.POST['data_inicio']
-            print(f'data inicial {data_inicial}')
-            data_final = requisicao.POST.get('data_final')
-            print(f' data final {data_final}')
-            id = Refeicao.objects.values_list('id_ref', flat=True)
-            hora_i = Refeicao.objects.values_list('hora_inicio', flat=True)
-            hora_f = Refeicao.objects.values_list('hora_fim', flat=True)
-            print(f'dados de refeicao = {id, hora_i, hora_f}')
-            tabela_total = Refeicao.objects.all()
-            print(f'total = {tabela_total}')
-            horas = []
-            for tab in tabela_total:
-                print('Este é o for do tab')
-                id = tab.id_ref
-                print(id)
-                hi = tab.hora_inicio
-                print(hi)
-                hf = tab.hora_fim
-                print(hf)
-                horas += id, hi, hf
-                tipo_ref = tab.nome
-                valor = tab.valor
-                print(f'estes são nomes e valores de refeicao = {tipo_ref}, {valor}')
+                print(f'esta é a empresa do usuario: {empresa_usuario}')
+                if not data_inicial or not data_final:
+                    return render(
+                        requisicao,
+                        template_name='website/home/relatorio/refeicoes/erro.html',
+                        context={'mensagem': 'Por favor, selecione o intervalo de datas'}
+                    )
+                print(f'Data inicial: {data_inicial} e Data final: {data_final}')
 
-            idr = horas[0]
-            refrr = []
-            refeicao_1 = Refeicao.objects.filter(id_ref=idr)
-            for refr in refeicao_1:
-                ref_nome_1 = refr.nome
-                ref_valor_1 = str(refr.valor)
-                refrr += ref_nome_1, ref_valor_1
+                #Busca todas as refeicoes da empresa
+                if user.is_superuser:
+                    refeicoes = Refeicao.objects.all().order_by('hora_inicio')
+                else:
+                    refeicoes = Refeicao.objects.filter(empresa=empresa_usuario).order_by('hora_inicio')
+                if not refeicoes.exists():
+                    return render(
+                        requisicao,
+                        template_name='website/home/relatorio/refeicoes/erro.html',
+                        context={'mensagem': 'Nenhuma refeição configurada para esta empresa'}
+                    )
 
-            evento_cafe= Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                                    .filter(hora__range=(horas[1], horas[2])) \
-                                    .order_by('data')
+                print(f'refeicoes encontradas: {refeicoes.count()}')
+                # Busca o tipo de pessoa
+                tipos_pessoa = requisicao.POST.getlist('tipo_pessoa')
 
-            idr = horas[3]
-            refrr = []
-            refeicao_3 = Refeicao.objects.filter(id_ref=idr)
-            for refr in refeicao_3:
-                ref_nome_3 = refr.nome
-                ref_valor_3 = str(refr.valor)
-                refrr += ref_nome_3, ref_valor_3
+                # Busca os eventos no intervalo de datas e da empresa
+                if user.is_superuser:
+                    eventos_qs = Evento.objects.filter(
+                        data__range=[data_inicial, data_final]
+                    ).order_by('data', 'hora')
+                else:
+                    eventos_qs = Evento.objects.filter(
+                        empresa=empresa_usuario,
+                        data__range=[data_inicial, data_final]
+                    ).order_by('data', 'hora')
 
-            evento_almoco = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                                   .filter(hora__range=(horas[4], horas[5])) \
-                                   .order_by('data')
+                if tipos_pessoa:
+                    eventos_qs = eventos_qs.filter(tipo_pessoa__in=tipos_pessoa)
+                if not eventos_qs.exists():
+                    return render(
+                        requisicao,
+                        template_name='website/home/relatorio/refeicoes/erro.html',
+                        context={'mensagem': 'Nenhum evento encontrado para o periodo selecionado.'}
+                    )
+                print(f'eventos_qs: {eventos_qs}')
+                print(f'Total de eventos encontrados: {eventos_qs.count()}')
 
-            idr = horas[6]
-            refrr = []
-            refeicao_6 = Refeicao.objects.filter(id_ref=idr)
-            for refr in refeicao_6:
-                ref_nome_6 = refr.nome
-                ref_valor_6 = str(refr.valor)
-                refrr += ref_nome_6, ref_valor_6
+                # Para evitar multiplos hits no DB ao acessar .hora muitas vezes
+                print('Para evitar multiplos hits no DB ao acessar .hora muitas vezes')
+                # Materializamos a lista (pequeno custo de memoria, melhora comparações customizadas)
+                print('Materializamos a lista (pequeno custo de memoria, melhora comparações customizadas)')
+                eventos = list(eventos_qs)
+                print('----------------testes -------------')
+                eve = Evento.objects.filter(empresa=empresa_usuario)
+                ref = Refeicao.objects.filter(empresa=empresa_usuario)
+                eve_enc = []
 
-            evento_cafe_tarde = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                                  .filter(hora__range=(horas[7], horas[8])) \
-                                  .order_by('data')
+                for r in ref:
+                    for e in eventos:
+                        print(f'comparando {r.hora_inicio} - {e.hora} - {r.hora_fim}')
+                        if r.hora_inicio <= e.hora <= r.hora_fim:
+                            print(f'querendo fazer as comparações: {r.hora_inicio} - {e.hora} - {r.hora_fim}')
+                            eve_enc.append(e)
+                print(f'este é o eve_enc: {eve_enc}')
 
-            idr = horas[9]
-            refrr = []
-            refeicao_9 = Refeicao.objects.filter(id_ref=idr)
-            for refr in refeicao_9:
-                ref_nome_9 = refr.nome
-                ref_valor_9 = str(refr.valor)
-                refrr += ref_nome_9, ref_valor_9
+                print(f'eventos: {eventos}')
+                eventos_por_refeicao = []
+                refeicoes_info ={}
 
-            evento_jantar = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                                  .filter(hora__range=(horas[10], horas[11])) \
-                                  .order_by('data')
+                print('-------------looping -------------')
 
-            idr = horas[12]
-            refrr = []
-            refeicao_12 = Refeicao.objects.filter(id_ref=idr)
-            for refr in refeicao_12:
-                ref_nome_12 = refr.nome
-                ref_valor_12 = str(refr.valor)
-                refrr += ref_nome_12, ref_valor_12
+                #Percorre todas as refeicoes configuradas
+                print('Percorre todas as refeicoes configuradas')
 
+                for refeicao in refeicoes:
+                   for e in eventos:
+                       print(f'comparando {refeicao.hora_inicio} - {e.hora} - {refeicao.hora_fim}')
+                       if refeicao.hora_inicio <= e.hora <= refeicao.hora_fim:
+                           eventos_por_refeicao.append(e)
+                print(f'este é o eventos encontrados: {eventos_por_refeicao}')
+                eventos_por_refeicao = list({eventos.id: eventos for eventos in eventos_por_refeicao}.values())
 
-            evento_ceia = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                                  .filter(hora__range=(horas[13], horas[14])) \
-                                  .order_by('data')
+                print('---RESULTADOS---')
+                print(f'Refeicoes info: {refeicoes_info}')
+                print(f'eventos encontrados: {eventos_por_refeicao}')
+                print(f'Total eventos por refeicao: {len(eventos_por_refeicao)}')
 
+                data_inicial_fmt = datetime.strptime(data_inicial, "%Y-%m-%d").date()
+                data_final_fmt = datetime.strptime(data_final, "%Y-%m-%d").date()
 
-            context = {
+                context = {
 
-                
-                'evento_almoco': evento_almoco,
-                'evento_cafe': evento_cafe,
-                'evento_cafe_tarde': evento_cafe_tarde,
-                'evento_jantar': evento_jantar,
-                'evento_ceia': evento_ceia,
-                'ref_nome_1': ref_nome_1,
-                'ref_valor_1': ref_valor_1,
-                'ref_nome_3': ref_nome_3,
-                'ref_valor_3': ref_valor_3,
-                'ref_nome_6': ref_nome_6,
-                'ref_valor_6': ref_valor_6,
-                'ref_nome_9': ref_nome_9,
-                'ref_valor_9': ref_valor_9,
-                'ref_nome_12': ref_nome_12,
-                'ref_valor_12': ref_valor_12
-            }
-            return render(requisicao, template_name='website/home/relatorio/refeicoes/resultado.html',
-                      context=context)
+                    'refeicoes_info': refeicoes_info,
+                    'eventos_por_refeicao': eventos_por_refeicao,
+                    'data_inicial': data_inicial_fmt,
+                    'data_final': data_final_fmt,
+                    'ref_nome': refeicao.nome,
+                    'ref_valor': refeicao.valor,
+
+                }
+
+                return render(
+                    requisicao,
+                    template_name='website/home/relatorio/refeicoes/resultado.html',
+                    context=context
+                )
+           except Exception as e:
+               print(f'Erro ao gerar relatorio: {e}')
+               return render(
+                   requisicao,
+                   template_name='website/home/relatorio/refeicoes/erro.html',
+                   context={'mensagem': f'Ocorreu um erro: {str(e)}'}
+               )
+        else:
+            print('Ação diferente de "consultar"')
+            return render(
+                requisicao,
+                template_name='website/home/relatorio/refeicoes/refeicoes.html',
+                context={'mensagem': 'Ação diferente de consultar'}
+            )
+
 
 # Relatorio refeições totalizado por funcionario
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def tot_func(requisicao: HttpRequest):
-    #print(f"este é o GET = {requisicao.method == 'GET'}")
+    user = requisicao.user
+    if user.is_superuser:
+        empresa_usuario = None
+    else:
+        empresa_usuario = getattr(user.profile, 'empresa', None)
+
     if requisicao.method == 'GET':
         print('entrou no get relatorio de tot_func')
         form = EventoForm()
         query = requisicao.GET.get('func')
-        print(f'nome = {query}')
+        print(f'Nome pesquisado = {query}')
 
-        print(f'este é o func = {query}')
+        if user.is_superuser:
+            completo = Funcionario.objects.all()
+        else:
+
+            completo = Funcionario.objects.filter(empresa=empresa_usuario)
+
         if query:
             print('entrou no if da query')
-            func = Funcionario.objects.filter(nome__istartswhith=query)
+            func = Funcionario.objects.filter(
+                nome__istartswith=query,
+                empresa=empresa_usuario
+            )
         else:
             print('entrou no else do get')
-            func = Funcionario.objects.all()
-        completo = Funcionario.objects.all()
+            func = Funcionario.objects.filter(empresa=empresa_usuario)
+
 
         context = {
             'func': func,
             'form': form,
-            'completo': completo
+            'completo': completo,
         }
-        return render(requisicao, template_name='website/home/relatorio/tot_func/tot_func.html', context=context)
+        return render(requisicao,
+                      template_name='website/home/relatorio/tot_func/tot_func.html',
+                      context=context
+        )
+
     elif requisicao.method == 'POST':
         print('entrou no post')
-        print(f'este é o post = {requisicao.method == "POST"}')
-        func = requisicao.POST.get('func')
-        print(f'este é o func {func}')
         form = EventoForm(requisicao.POST)
-        req = requisicao.POST
-        for r in req.values():
-            status = r
-        print(f'este é o status =  {status}')
+        acao = requisicao.POST.get('acao') or requisicao.POST.get('status') or 'consultar'
+        print(f'Ação: {acao}')
 
-
-        if status == 'consultar':
+        if acao == 'consultar':
             print('entrou no consultar')
-            print(f'este é o post consulta {requisicao.POST}')
             data_inicial = requisicao.POST['data_inicio']
-            print(f'data inicial {data_inicial}')
             data_final = requisicao.POST.get('data_final')
-            print(f' data final {data_final}')
-            funcionario = requisicao.POST.get('func')
-            print(f'funcionario = {funcionario}')
-            tabela_total = Refeicao.objects.all()
-            print(f'tabela total = {tabela_total}')
-            refeicoes = Refeicao.objects.aggregate(Count('id_ref'))
-            tot_ref = refeicoes["id_ref__count"]
+            funcionario_nome = requisicao.POST.get('func')
 
-            eventos = []
-            horas = []
-            tot = []
-            total_eventos = []
-            n = 0
+            print(f'periodo: {data_inicial} a {data_final}')
+            print(f'Funcionario selecionado: {funcionario_nome}')
 
-            while n != tot_ref:
+            # Se escolher "Todos", traz todos os funcionarios da empresa
+            if funcionario_nome == "Todos":
+                if user.is_superuser:
+                    funcionarios = Funcionario.objects.all()
+                else:
+                    funcionarios = Funcionario.objects.filter(empresa=empresa_usuario)
+            else:
+                if user.is_superuser:
+                    funcionarios = Funcionario.objects.filter(nome__startswith=funcionario_nome)
+                else:
+                    funcionarios = Funcionario.objects.filter(
+                    nome__startswith=funcionario_nome,
+                    empresa=empresa_usuario
+                )
+            if not funcionarios.exists():
+                print('Nenhum funcionario encontrado.')
+                return render(
+                    requisicao,
+                    template_name='website/home/relatorio/tot_func/semdados.html'
+                )
 
-                for tab in tabela_total:
-                    print('Este é o for do tab')
-                    id = tab.id_ref
-                    print(id)
-                    hi = tab.hora_inicio
-                    print(hi)
-                    hf = tab.hora_fim
-                    print(hf)
-                    horas += id, hi, hf
-                    tipo_ref = tab.nome
-                    valor = tab.valor
-                    print(f'estes são nomes e valores de refeicao = {tipo_ref}, {valor}')
+            # Superuser vê tudo, usuario comum só da empresa dele
+            if user.is_superuser:
+                eventos_base = Evento.objects.all()
+                refeicoes = Refeicao.objects.all()
+            else:
+                eventos_base = Evento.objects.filter(empresa=empresa_usuario)
+                refeicoes = Refeicao.objects.filter(empresa=empresa_usuario)
 
-                    # pega todas as refeicoes
-                    idr = id
-                    refrr = []
-                    refeicao_12 = Refeicao.objects.filter(id_ref=idr)
-                    for refr in refeicao_12:
-                        ref_nome_12 = refr.nome
-                        ref_valor_12 = str(refr.valor)
-                        ref_hi = refr.hora_inicio
-                        ref_hf = refr.hora_fim
-                        refrr += ref_nome_12, ref_valor_12, ref_hi, ref_hf
-                        print(f'este é o refrr = {refrr}')
-                        print(f'este é o horario = {ref_hi} {ref_hf}')
-                        evento = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                            .filter(nome__startswith=funcionario) \
-                            .filter(hora__range=(ref_hi, ref_hf))
+            # Dicionario de totais
+            totais_funcionarios = defaultdict(list)
+            total_geral = 0.0
 
+            #total_eventos = defaultdict(lambda: {"total": 0, "valor": 0.0})
 
-                        eventos += evento
-                        som_eventos = eventos, tipo_ref, valor
-                        print(f'este é o evento {evento}')
-                        total = len(evento)
-                        print(f'total de eventos = {total}')
-                        tot_t = total * float(ref_valor_12)
+            for func in funcionarios:
+                subtotal_func = 0.0
+                # Pega só as refeicoes da empresa do funcionario
+                if user.is_superuser:
+                    refeicoes_func = Refeicao.objects.filter(empresa=func.empresa)
+                else:
+                    refeicoes_func = refeicoes # já filtradas no codigo mais acima
 
+                for ref in refeicoes_func:
+                    eventos_filtrados = eventos_base.filter(
+                        data__range=(data_inicial, data_final),
+                        nome__startswith=func.nome,
+                        hora__range=(ref.hora_inicio, ref.hora_fim),
+                        empresa=func.empresa
+                    ).distinct()
 
-                        total_eventos.append((funcionario, ref_nome_12, f'{str(total)}', ref_valor_12, f'{tot_t:.2f}'))
+                    total = eventos_filtrados.count()
+                    #total_valor = total * float(ref.valor)
 
-
-                    n += 1
-
-            #total geral
+                    #chave = (func.nome, ref.nome)
+                    #total_eventos[chave]["total"] += total
+                    #total_eventos[chave]["valor"] += total_valor
+                    if total == 0:
+                        continue # pula refeicao sem registros
+                    valor_unit = float(ref.valor)
+                    total_valor = total * valor_unit
+                    subtotal_func += total_valor
 
 
-            eve_0 = total_eventos[0]
-            eve_1 = total_eventos[1]
-            eve_2 = total_eventos[2]
-            eve_3 = total_eventos[3]
-            eve_4 = total_eventos[4]
 
-            total_geral = float(eve_0[4]) + float(eve_1[4]) + float(eve_2[4]) + float(eve_3[4]) + float(eve_4[4])
-            tot_geral = (f'{total_geral:.2f}')
+                    totais_funcionarios[func.nome].append({
+                        'refeicao': ref.nome,
+                        'quantidade': total,
+                        'valor_unit': f"{valor_unit:.2f}",
+                        'valor_total': f"{total_valor:.2f}",
+
+
+                    })
+
+                    print(f'estas são as validações {func.nome} - {ref.nome}: {total} eventos X {ref.valor} = {total_valor}')
+
+
+                if subtotal_func > 0:
+                    totais_funcionarios[func.nome].append({
+                        'subtotal': f"{subtotal_func:.2f}"
+                    })
+                    total_geral += subtotal_func
+
+            print(f"Total geral = {total_geral:.2f}")
+
             context = {
-                'funcionario': funcionario,
-                'eve_0': eve_0,
-                'eve_1': eve_1,
-                'eve_2': eve_2,
-                'eve_3': eve_3,
-                'eve_4': eve_4,
-                'tot_geral': tot_geral
+                'funcionario': funcionario_nome,
+                'totais_funcionarios': dict(totais_funcionarios),
+                'tot_geral': f"{total_geral:.2f}",
+                'data_inicial': data_inicial,
+                'data_final': data_final,
+            }
+            return render(
+                requisicao,
+                template_name='website/home/relatorio/tot_func/resultado.html',
+                context=context
+            )
 
-
-                }
-            return render(requisicao, template_name='website/home/relatorio/tot_func/resultado.html',
-                              context=context)
-
-
-        return render(requisicao, template_name='website/home/relatorio/tot_func/semdados.html')
-
+    return render(
+        requisicao,
+        template_name='website/home/relatorio/tot_func/semdados.html'
+    )
 
 # Relatorios Refeições Totalizadas
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def tot_refeicao(requisicao: HttpRequest):
-    print(f"este é o GET = {requisicao.method == 'GET'}")
+    user = requisicao.user
+    empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
+
+
     if requisicao.method == 'GET':
         print('entrou no get relatorio de tot_refeicoes')
         return render(requisicao, template_name='website/home/relatorio/tot_refeicao/tot_refeicao.html')
@@ -1245,95 +1510,65 @@ def tot_refeicao(requisicao: HttpRequest):
         print('entrou no post')
         print(f'este é o post = {requisicao.method == "POST"}')
         form = EventoForm(requisicao.POST)
-        print(f'este é o form = {form}')
-        req = requisicao.POST
-        for r in req.values():
-            status = r
-        print(f'este é o status =  {status}')
+        acao = requisicao.POST.get('acao') or requisicao.POST.get('status') or 'consultar'
 
-        if status == 'consultar':
-            print('entrou no consultar')
-            print(f'este é o post consulta {requisicao.POST}')
-            data_inicial = requisicao.POST['data_inicio']
-            print(f'data inicial {data_inicial}')
+        if acao == 'consultar':
+            data_inicial = requisicao.POST.get('data_inicio')
             data_final = requisicao.POST.get('data_final')
-            print(f' data final {data_final}')
-            tabela_total = Refeicao.objects.all()
-            print(f'tabela total = {tabela_total}')
-            refeicoes = Refeicao.objects.aggregate(Count('id_ref'))
-            tot_ref = refeicoes["id_ref__count"]
+            print(f'Periodo sleecionado: {data_inicial} à {data_final}')
 
-            n = 0
-            eventos = []
-            horas = []
+            #Define o conjunto de refeições e eventos de acordo com o tipo de usuario
+            if user.is_superuser:
+                refeicoes = Refeicao.objects.all()
+                eventos_base = Evento.objects.all()
+            else:
+                refeicoes = Refeicao.objects.filter(empresa=empresa_usuario)
+                eventos_base = Evento.objects.filter(empresa=empresa_usuario)
+
             total_eventos = []
+            total_geral = 0.0
 
-            while n != tot_ref:
+            for ref in refeicoes:
+                print(f'Processando refeicao: {ref.nome} ({ref.hora_inicio} - {ref.hora_fim}')
+                eventos_filtrados = eventos_base.filter(
+                    data__range = (data_inicial, data_final),
+                    hora__range = (ref.hora_inicio, ref.hora_fim),
+                    empresa = ref.empresa # Garante que só conte eventos da mesma empresa
+                ).distinct()
 
-                for tab in tabela_total:
-                    print('Este é o for do tab')
-                    id = tab.id_ref
-                    print(id)
-                    hi = tab.hora_inicio
-                    print(hi)
-                    hf = tab.hora_fim
-                    print(hf)
-                    horas += id, hi, hf
-                    tipo_ref = tab.nome
-                    valor = tab.valor
-                    print(f'estes são nomes e valores de refeicao = {tipo_ref}, {valor}')
+                total = eventos_filtrados.count()
+                valor_unit = float(ref.valor)
+                valor_total_num = total * valor_unit # valor numerico
+                total_geral += valor_total_num
+                empresa_nome = ref.empresa.nome if ref.empresa else "Sem Empresa"
+                total_eventos.append((
+                    ref.nome,
+                    str(total),
+                    f"{valor_unit:.2f}",
+                    f"{valor_total_num:.2f}",
+                    empresa_nome
+                ))
 
-                    # pega todas as refeicoes
-                    idr = id
-                    refrr = []
-                    refeicao_12 = Refeicao.objects.filter(id_ref=idr)
-                    for refr in refeicao_12:
-                        ref_nome_12 = refr.nome
-                        ref_valor_12 = str(refr.valor)
-                        ref_hi = refr.hora_inicio
-                        ref_hf = refr.hora_fim
-                        refrr += ref_nome_12, ref_valor_12, ref_hi, ref_hf
-                        print(f'este é o refrr = {refrr}')
-                        print(f'este é o horario = {ref_hi} {ref_hf}')
-                        evento = Evento.objects.filter(data__range=(data_inicial, data_final)) \
-                            .filter(hora__range=(ref_hi, ref_hf))
-
-                        eventos += evento
-                        som_eventos = eventos, tipo_ref, valor
-                        print(f'este é o evento {evento}')
-                        total = len(evento)
-                        print(f'total de eventos = {total}')
-                        tot_t = total * float(ref_valor_12)
-
-                        total_eventos.append((ref_nome_12, f'{str(total)}', ref_valor_12, f'{tot_t:.2f}'))
-
-                    n += 1
-
-            print(f'este é o total eventos {total_eventos}')
-            eve_0 = total_eventos[0]
-            eve_1 = total_eventos[1]
-            eve_2 = total_eventos[2]
-            eve_3 = total_eventos[3]
-            eve_4 = total_eventos[4]
-
-            total_geral = float(eve_0[3]) + float(eve_1[3]) + float(eve_2[3]) + float(eve_3[3]) + float(eve_4[3])
-            tot_geral = (f'{total_geral:.2f}')
-
-            context= {
-                'eve_0': eve_0,
-                'eve_1': eve_1,
-                'eve_2': eve_2,
-                'eve_3': eve_3,
-                'eve_4': eve_4,
-                'tot_geral': tot_geral
-
+                print(f'{ref.nome}: {total} eventos X {valor_unit} = {valor_total_num}')
+            # Contexto para o template
+            context = {
+                'total_eventos': total_eventos,
+                'tot_geral': f"{total_geral:.2f}",
+                'data_inicial': data_inicial,
+                'data_final': data_final
             }
-
-            return render(requisicao, template_name='website/home/relatorio/tot_refeicao/resultado.html',
-                          context=context)
+            return render(
+                requisicao,
+                template_name='website/home/relatorio/tot_refeicao/resultado.html',
+                context=context
+            )
+    return render(
+        requisicao,
+        template_name='website/home/relatorio/tot_refeicao/semdados.html',
+    )
 
 # Sobre
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def sobre(requisicao: HttpRequest):
     print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -1344,7 +1579,7 @@ def sobre(requisicao: HttpRequest):
 
 
 # Modelo de Refeições
-@login_required
+@grupo_required(['Administrador'])
 def modelo(requisicao: HttpRequest):
     print(f"este é o Get do Modelo = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -1435,91 +1670,188 @@ def modelo(requisicao: HttpRequest):
 
             return render(requisicao, template_name='website/home/configuracoes/modelos/salvo.html', context=context)
 
-@login_required
+@grupo_required(['Administrador'])
 def cria_usuario(requisicao: HttpRequest):
+    user = requisicao.user
+    empresa_usuario = user.profile.empresa if hasattr(user, 'profile') else None
+
     if requisicao.method == 'GET':
         print(f'entrou no if do get usuario')
+        grupo = Group.objects.all()
+        print(f'Grupo selecionado: {grupo}')
+        context = {'grupo': grupo}
+        return render(requisicao,
+                      template_name='website/home/configuracoes/logins/logins.html',
+                      context=context
+        )
 
-        return render(requisicao, template_name='website/home/configuracoes/logins/logins.html')
-    # Verifique se a requisição é POST
     elif requisicao.method == 'POST':
         print('entrou no post')
-        print(f'este é o post = {requisicao.method == "POST"}')
-        form = ParametroForm(requisicao.POST)
-        req = requisicao.POST
-        for r in req.values():
-            status = r
-        print(f'este é o status =  {status}')
+        form = UsuarioForm(requisicao.POST)
+        acao = requisicao.POST.get('acao') or requisicao.POST.get('status') or 'incluir'
+        print(f'esta é a ação: {acao}')
 
-        if status == 'incluir':
+        if acao == 'incluir':
+            print('Entrou no incluir')
             username = requisicao.POST['username']
             password = requisicao.POST['password']
             email = requisicao.POST.get('email', '')
+            first_name = requisicao.POST.get('first_name', '')
+            last_name = requisicao.POST.get('last_name', '')
 
-            # Crie o usuário
-            user = User.objects.create_user(username=username, password=password, email=email)
+            # Captura o grupo escolhido no select
 
-            # Adicione informações adicionais
-            user.first_name = requisicao.POST.get('first_name', '')
-            user.last_name = requisicao.POST.get('last_name', '')
-            user.save()
+            grupo_id = requisicao.POST.get('grupo')
+            print(f'Grupo selecionado: {grupo_id}')
 
+
+            # Cria o usuário
+            novo_usuario = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                is_staff=False,
+                is_superuser=False
+            )
+            print(f'este é o novo usuario: {novo_usuario}')
+
+            # Associa o grupo escolhido
+            if grupo_id:
+                try:
+                    grupo = Group.objects.get(id=grupo_id)
+                    novo_usuario.groups.add(grupo)
+                    print(f'Grupo {grupo.name} associado ao usuario {novo_usuario.username}')
+                except Group.DoesNotExist:
+                    print(f'Erro: grupo com o id {grupo_id} não existe')
+
+            # Atualiza o profile ou cria caso Não exista
+            try:
+                profile = Profile.objects.get(user=novo_usuario)
+                # Atualiza o campo empresa (ou outros campos que queira copiar)
+                profile.empresa = empresa_usuario
+                profile.save()
+                print(f'Profile do novo usuario atualizado: empresa: {profile.empresa}')
+            except Profile.DoesNotExist:
+                # Se por algum motivo o profile não existir, cria com default
+                profile = Profile.objects.create(user=novo_usuario, empresa=empresa_usuario)
+                print('Profile não existia - Criado Agora.')
+
+            # Recupera listagem ou redireciona conforme teu fluxo
             logins = User.objects.all()
+            context= {'logins': logins}
+            print(f'Usuario {novo_usuario.username} criado com sucesso. Empresa atribuida: {empresa_usuario}. Grupo: {getattr(grupo, "name", None)}')
 
-            context = {
-                'logins': logins
-            }
+            return render(
+                requisicao,
+                template_name='website/home/configuracoes/logins/salvo.html',
+                context=context
+            )
 
-            return render(requisicao, template_name='website/home/configuracoes/logins/salvo.html', context=context)
-
-        if status == 'alterar':
+        elif status == 'alterar':
             print('entrou no alterar')
             username = requisicao.POST['username']
             nova_senha = requisicao.POST['password']
+            email = requisicao.POST.get('email', '')
+            first_name = requisicao.POST.get('last_name', '')
+            last_name = requisicao.POST.get('last_name', '')
+            grupo_id = requisicao.POST.get('grupo')
+
             user = User.objects.get(username=username)
-            user.set_password(nova_senha)
+
+            # Atualiza dados basicos
+            user.email = email
+            user.first_name = first_name
+            user.last_name = last_name
+            if nova_senha:
+                user.set_password(nova_senha)
+
             user.save()
 
+            # Atualiza grupo (se enviado no form)
+            if grupo_id:
+                grupo = Group.objects.get(id=grupo_id)
+                user.groups.clear()
+                user.groups.add(grupo)
 
-            logins = User.objects.all()
+            # Garante que o profile continue na mesma empresa
+            profile = Profile.objects.filter(user=user).first()
+            if not profile:
+                profile = Profile.objects.filter(user=user, empresa=requisicao.user.profile.empresa)
+            else:
+                profile.empresa = requisicao.user.profile.empresa
+                profile.save()
 
             context = {
-                'logins': logins
+                'logins': User.objects.all()
             }
+            return render(requisicao,
+                          template_name='website/home/configuracoes/logins/alterado.html',
+                          context=context
+            )
 
-            return render(requisicao, template_name='website/home/configuracoes/logins/alterado.html', context=context)
 
-        if status == 'excluir':
+        elif status == 'excluir':
             print('entrou no excluir')
             username = requisicao.POST['username']
             user = User.objects.get(username=username)
-            user.delete()
 
+            if user == requisicao.user:
+                messages.error(requisicao, 'Você não pode excluir seu próprio usuario.')
+            else:
+                Profile.objects.filter(user=user).delete()
+                user.delete()
+                messages.success(requisicao, f"Usuario {username} excluido com sucesso.")
 
             logins = User.objects.all()
             context = {
                 'logins': logins
             }
 
-            return render(requisicao, template_name='website/home/configuracoes/logins/excluido.html', context=context)
+            return render(requisicao,
+                          template_name='website/home/configuracoes/logins/excluido.html',
+                          context=context
+            )
 
-        if status == 'consultar':
+        elif status == 'consultar':
             print('entrou no consultar')
 
-            logins = User.objects.all()
+            # pega a empresa do usuario logado
+            user = requisicao.user
+
+            if user.is_superuser:
+                logins = User.objects.all()
+            else:
+                empresa_usuario = getattr(user.profile, 'empresa', None)
+                if empresa_usuario:
+                    # filtra usuarios da mesma empresa
+                    logins = User.objects.filter(profile__empresa=empresa_usuario)
+                else:
+                    logins = User.objects.none() #usuario sem empresa não vê ninguém
             context = {
                 'logins': logins
             }
 
-            return render(requisicao, template_name='website/home/configuracoes/logins/salvo.html', context=context)
+            return render(requisicao,
+                          template_name='website/home/configuracoes/logins/salvo.html',
+                          context=context
+            )
 
 # Relatorio de Funcionarios
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def relat_funcionarios(requisicao: HttpRequest):
+    user = requisicao.user
+    empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
     if requisicao.method == "GET":
         print('entrou no Get de Relat Funcionario')
-        form = FuncionarioForm
-        func = Funcionario.objects.all()
+        if user.is_superuser:
+            form = FuncionarioForm
+            func = Funcionario.objects.all()
+        else:
+            form = FuncionarioForm
+            func = Funcionario.objects.filter(empresa=empresa_usuario)
+
         print(f'este é o func = {func}')
 
         context = {
@@ -1528,12 +1860,18 @@ def relat_funcionarios(requisicao: HttpRequest):
         }
         return render(requisicao, template_name='website/home/relatorio/funcionarios/funcionarios.html', context=context)
 
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def relat_visitantes(requisicao: HttpRequest):
+    user = requisicao.user
+    empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
     if requisicao.method == "GET":
-        print('entrou no Get de Relat Funcionario')
+        print('entrou no Get de Relat Visitante')
         form = VisitanteForm
-        visi = Visitante.objects.all()
+        if user.is_superuser:
+            visi = Visitante.objects.all()
+        else:
+            visi = Visitante.objects.filter(empresa=empresa_usuario)
+
 
         context = {
             'form': form,
@@ -1542,12 +1880,17 @@ def relat_visitantes(requisicao: HttpRequest):
         return render(requisicao, template_name='website/home/relatorio/visitantes/visitantes.html', context=context)
 
 #Relatorio de Terceiros
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consultar'])
 def relat_terceiros(requisicao: HttpRequest):
+    user = requisicao.user
+    empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
     if requisicao.method == "GET":
         print('entrou no Get de Relat Funcionario')
         form = TerceiroForm
-        terc = Terceiro.objects.all()
+        if user.is_superuser:
+            terc = Terceiro.objects.all()
+        else:
+            terc = Terceiro.objects.filter(empresa=empresa_usuario)
 
         context = {
             'form': form,

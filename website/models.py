@@ -18,6 +18,7 @@ class Funcionario(models.Model):
     documento = models.CharField(max_length=50, null=True, blank=True)
     credencial = models.CharField(max_length=50, null=True, blank=True)
     grup_ref = models.ForeignKey('Grupo_Refeicao', on_delete=models.CASCADE)
+    tipo_pessoa = models.IntegerField(default=1, editable=False)
     ativo = models.SlugField(null=True, blank=True)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True)
 
@@ -37,6 +38,7 @@ class Visitante(models.Model):
     data_fim = models.DateField(null=True, blank=True)
     hora_fim = models.TimeField(null=True, blank=True)
     motivo = models.CharField(max_length=50, null=True, blank=True)
+    tipo_pessoa = models.IntegerField(default=2, editable=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True)
     object = None
     def __str__(self):
@@ -45,7 +47,7 @@ class Visitante(models.Model):
 class Terceiro(models.Model):
     matricula = models.CharField(max_length=100, null=True, blank=True)
     nome = models.CharField(max_length=100, null=True, blank=True)
-    empresa = models.CharField(max_length=100, null=True, blank=True)
+    emp_ter = models.CharField(max_length=100, null=True, blank=True)
     documento = models.CharField(max_length=50, null=True, blank=True)
     credencial = models.CharField(max_length=50, null=True, blank=True)
     func = models.ForeignKey('Funcionario', on_delete=models.CASCADE)
@@ -54,10 +56,11 @@ class Terceiro(models.Model):
     hora_inicio = models.TimeField(null=True, blank=True)
     data_fim = models.DateField(null=True, blank=True)
     hora_fim = models.TimeField(null=True, blank=True)
+    tipo_pessoa = models.IntegerField(default=3, editable=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True)
     object = None
     def __str__(self):
-        return f"{self.matricula} {self.nome} {self.documento} {self.credencial} {self.func} {self.grup_ref} {self.data_inicio} {self.hora_inicio} {self.data_fim} {self.hora_fim} {self.empresa.cnpj}"
+        return f"{self.matricula} {self.nome} {self.emp_ter} {self.documento} {self.credencial} {self.func} {self.grup_ref} {self.data_inicio} {self.hora_inicio} {self.data_fim} {self.hora_fim} {self.empresa.cnpj}"
 
 
 
@@ -124,6 +127,7 @@ class Evento(models.Model):
     hora = models.TimeField(null=True, blank=True)
     equip_id = models.CharField(max_length=10, null=True, blank=True)
     equip_nome = models.CharField(max_length=100, null=True, blank=True)
+    tipo_pessoa = models.IntegerField(null=True, blank=True)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True)
     object = None
     def __str__(self):

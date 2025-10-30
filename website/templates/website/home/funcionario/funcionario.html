@@ -131,7 +131,7 @@
                 <td><label style="font-size: 1rem">Grupo de Refeições</label></td>
             </div>
             <div class="mb-3">
-                <select style="text-align: center; padding:1.2rem 11.5rem" id="grupos_refeicao" name ="grupos_refeicao" required value={{grupos_refeicao}}
+                <select style="text-align: center; padding:1.2rem 11.5rem" id="grupos_refeicao" name ="grupos_refeicao" required value={{grupos_refeicao}}>
                                 {% for g in grupos_refeicao %}
                                     <option value="{{g.id_grup}}"> {{g.id_grup}} - {{g.nome}}  </option>
                                 {%endfor%}

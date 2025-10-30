@@ -25,6 +25,7 @@
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
+                            <col width="10%">
                         </colgroup>
                         <thead>
 
@@ -38,26 +39,24 @@
                                 <td><b>Data Inicio</b></td>
                                 <td><b>Hora Inicio</b></td>
                                 <td><b>Data Final</b></td>
-                                <td><b>Hora Final </b></td>
+                                <td><b>Hora Final</b></td>
+                                <td><b>Empresa</b></td>
                             </tr>
                         </thead>
                         <tbody>
                                 {% for vis in visitante %}
                                     <tr class="table-warning">
                                         <td>{{ vis.matricula }}</td>
-                                        <td>
-                                            <a href="{% url 'visitante: visitante' vis.id %}">
-                                                {{ vis.nome }}
-                                            </a>
-                                        </td>
+                                        <td>{{ vis.nome }}</td>
                                         <td>{{ vis.documento }}</td>
                                         <td>{{ vis.credencial }}</td>
                                         <td>{{ vis.func.nome }}</td>
                                         <td>{{ vis.grup_ref.nome }}</td>
-                                        <td>{{ vis.data_inicio }}</td>
+                                        <td>{{ vis.data_inicio|date:"d/m/Y" }}</td>
                                         <td>{{ vis.hora_inicio }}</td>
-                                        <td>{{ vis.data_fim }}</td>
+                                        <td>{{ vis.data_fim|date:"d/m/Y" }}</td>
                                         <td>{{ vis.hora_fim }}</td>
+                                        <td>{{ vis.empresa.id }}</td>
                                     </tr>
                                 {%endfor %}
 

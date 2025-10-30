@@ -18,7 +18,7 @@ from website.views import (HomeViewer, cria_equipamento, cria_refeicao, cria_fun
                            cria_visitante, cria_busca, relatorio_refeicoes,
                            monitoramento, tot_func, tot_refeicao, sobre, modelo, MrLoginView, logout_view,
                            MrDashboardView, cria_usuario, cria_terceiro, relat_funcionarios, relat_visitantes,
-                           relat_terceiros)
+                           relat_terceiros, acesso_negado)
 
 
 app_name = 'website'
@@ -46,6 +46,8 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
 
     path('home/dashboard/', MrDashboardView.as_view(), name='dashboard'),
+
+    path('acesso-negado/', acesso_negado, name='acesso_negado'),
 
     #Equipamento
     path('home/equipamento/', cria_equipamento, name='equipamento'),

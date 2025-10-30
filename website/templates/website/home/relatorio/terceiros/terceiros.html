@@ -17,22 +17,24 @@
 
     <table class="table table-hover" width="100%" border="1">
         <colgroup>
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
-            <col width="10%">
+            <col width="5%">
+            <col width="15%">
+            <col width="15%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="20">
+            <col width="5%">
 
         </colgroup>
         <thead class="table-success">
             <tr>
                 <th><b>Matricula</b></th>
                 <th><b>Nome</b></th>
-                <th><b>empresa</b></th>
+                <th><b>Empresa Terceira</b></th>
                 <th><b>Documento</b></th>
                 <th><b>Credencial</b></th>
                 <th><b>Data Inicio</b></th>
@@ -40,7 +42,7 @@
                 <th><b>Data Termino</b></th>
                 <th><b>Hora Termino</b></th>
                 <th><b>Visitado</b></th>
-
+                <th><b>Empresa</b></th>
             </tr>
         </thead>
         <tbody>
@@ -48,14 +50,15 @@
                 <tr class="table-light">
                     <td>{{ e.matricula }}</td>
                     <td>{{ e.nome }}</td>
-                    <td>{{ e.empresa }}</td>
+                    <td>{{ e.emp_ter }}</td>
                     <td>{{ e.documento }}</td>
                     <td>{{ e.credencial }}</td>
-                    <td>{{ e.data_inicio }}</td>
+                    <td>{{ e.data_inicio|date:"d/m/Y" }}</td>
                     <td>{{ e.hora_inicio }}</td>
-                    <td>{{ e.data_fim }}</td>
+                    <td>{{ e.data_fim|date:"d/m/Y" }}</td>
                     <td>{{ e.hora_fim }}</td>
                     <td>{{ e.func.nome}}</td>
+                    <td>{{ e.empresa_id }}</td>
 
                 </tr>
             {% endfor %}

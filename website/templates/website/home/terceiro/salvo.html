@@ -15,23 +15,25 @@
 
                     <table class="table table-hover" width="100%" border="1">
                         <colgroup>
+                            <col width="5%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
-                            <col width="10%">
-                            <col width="10%">
-                            <col width="10%">
-                            <col width="10%">
+                            <col width="5%">
+                            <col width="5%">
+                            <col width="5%">
+                            <col width="5%">
+                            <col width="5%">
                         </colgroup>
                         <thead>
 
                             <tr class="table-success">
                                 <td><b>Matricula</b></td>
                                 <td><b>Nome</b></td>
-                                <td><b>Empresa</b></td>
+                                <td><b>Empresa Terceira</b></td>
                                 <td><b>Documento</b></td>
                                 <td><b>Credencial</b></td>
                                 <td><b>Visitado</b></td>
@@ -40,6 +42,7 @@
                                 <td><b>Hora Inicio</b></td>
                                 <td><b>Data Final</b></td>
                                 <td><b>Hora Final </b></td>
+                                <td><b> Empresa </b></td>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,15 +50,16 @@
                                     <tr class="table-warning">
                                         <td>{{ ter.matricula }}</td>
                                         <td>{{ ter.nome }}</td>
-                                        <td>{{ ter.empresa }}</td>
+                                        <td>{{ ter.emp_ter }}</td>
                                         <td>{{ ter.documento }}</td>
                                         <td>{{ ter.credencial }}</td>
                                         <td>{{ ter.func.nome }}</td>
                                         <td>{{ ter.grup_ref.nome }}</td>
-                                        <td>{{ ter.data_inicio }}</td>
+                                        <td>{{ ter.data_inicio|date:"d/m/Y" }}</td>
                                         <td>{{ ter.hora_inicio }}</td>
-                                        <td>{{ ter.data_fim }}</td>
+                                        <td>{{ ter.data_fim|date:"d/m/Y" }}</td>
                                         <td>{{ ter.hora_fim }}</td>
+                                        <td>{{ ter.empresa_id }}</td>
                                     </tr>
                                 {%endfor %}
 

@@ -85,7 +85,7 @@
 
         <div class="tab-content mt-4" style="margin-left: 35rem; margin-right: 35rem">
             <div class="mb-3">
-                <td><input style="margin-left: 0.5rem" required type="number" name="matricula" maxlength="10" id="matricula" placeholder="Id" size="5"></td>
+                <td><input style="margin-left: 0.5rem" required type="number" name="matricula" maxlength="10" id="matricula" placeholder="Matricula" size="5"></td>
             </div>
             <div class="mb-3">
                 <td><input style="margin-left: 0.5rem" required type="text" name="nome" maxlength="100" id="nome" placeholder="Nome do Terceirizado" size="70"></td>
@@ -113,26 +113,37 @@
                 <td><h5 style="font-size: 1rem; text-align: center">Grupo de Refeições</h5></td>
             </div>
             <div class="mb-3">
-                <select  style="text-align: center; padding:0.4rem 25rem 0.1rem 9rem" id="grup_ref" name="grup_ref" required>
-                            {% for g in grupo_refeicao %}
-                              <option value="{{ g.id_grup_ref }}"> {{g.nome}}</option>
+                <select  style="text-align: center; padding:0.4rem 25rem 0.1rem 9.5rem" id="grupos_refeicao" name="grupos_refeicao" required>
+                            {% for g in grupos_refeicao %}
+                              <option value="{{ g.id_grup }}"> {{g.id_grup}} - {{g.nome}}</option>
                             {%endfor%}
                 </select>
             </div>
-            <div class="mb-3">
-                <td><input style="margin-left: 0.5rem" required type="date" name="data_inicio" id="data_inicio"></td>
-            </div>
-            <div class="mb-3">
-                <td><input style="margin-left: 0.5rem" required type="time" name="hora_inicio" id="hora_inicio" value="08:00"></td>
-            </div>
-            <div class="mb-3">
-                <td><input style="margin-left: 0.5rem" required type="date" name="data_fim" id="data_fim"></td>
-            </div>
-            <div class="mb-3">
-                <td><input style="margin-left: 0.5rem" required type="time" name="hora_fim" id="hora_fim"></td>
-            </div>
+            <div  style="display: flex; gap: 10px">
+               <div class="mb-3">
+                   <td><h5>Data e hora de Inicio:</h5></td>
+               </div>
+               <div class="mb-3">
+                    <td><input style="margin-left: 0.5rem" type="date" name="data_inicio" id="data_inicio" value="{{ hoje }}" required></td>
+               </div>
+               <div class="mb-3">
+                    <td><input style="margin-left: 0.5rem" type="time" name="hora_inicio" id="hora_inicio" value="08:00" required></td>
+               </div>
+           </div>
+           <div  style="display: flex; gap: 10px">
+               <div class="mb-3">
+                   <td><h5>Data e hora Termino:</h5></td>
+               </div>
+               <div class="mb-3">
+                   <td><input style="margin-left: 0.5rem" type="date" name="data_fim" id="data_fim" required></td>
+               </div>
+               <div class="mb-3">
+                   <td><input style="margin-left: 0.5rem" type="time" name="hora_fim" id="hora_fim" value="18:00" required></td>
+               </div>
+           </div>
         </div>
                 <script src="{% static 'requerido.js' %}"></script>
+                <br>
                 <br>
                 <button style="margin-left: 50rem" type="incluir" value="incluir" name="incluir" class="btn btn-outline-success">Incluir</button>
                 <button type="alterar" value="alterar" name="alterar" class="btn btn-outline-warning">Alterar</button>

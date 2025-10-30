@@ -87,11 +87,12 @@
             </div>
             <div class="mb-3">
                  <td><select class="form-select" id="func" name="func" required value="func">
+                     <option value="Todos">Todos</option>
                             {% for c in completo %}
-                              <option>{{c.nome}}</option>
+                              <option value="{{c.nome}}">{{c.nome}}</option>
                             {%endfor%}
                  </select>
-                    </td>
+                 </td>
             </div>
             <div class="mb-3">
                 <td><h5 style="font-size: 1rem; text-align: center">Data Inicial</h5></td>

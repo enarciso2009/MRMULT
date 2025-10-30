@@ -80,21 +80,34 @@
         <script src="{% static 'scripts.js' %}"></script>
 
 
-        <h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Relatório de Refeições Funcionários</h1>
+        <h1 class="func_h1" style="text-align: center; padding-top: 2rem; padding-bottom: 2rem">Relatório de Refeições</h1>
         <form class="relat_ref" method="post" style="margin-left: 8rem; margin-right: 8rem">
             {% csrf_token %}
         <div class="tab-content mt-4" style="margin-left: 35rem; margin-right: 35rem">
             <div class="mb-3">
-                <td><h5 style="font-size: 1rem; text-align: center">Data Inicial</h5></td>
+                <label for="tipo_pessoa"><b>Tipo de Pessoa:</b></label>
+                <select name="tipo_pessoa" id="tipo_pessoa" multiple class="form-control">
+                    <option value="1">Funcionario</option>
+                    <option value="2">Visitante</option>
+                    <option value="3">Terceiro</option>
+
+                </select>
+            </div>
+            <div  style="display: flex; gap: 10px">
+            <div class="mb-3">
+                <td><h5 style="font-size: 1rem; text-align: center">Data Inicial:</h5></td>
             </div>
             <div class="mb-3">
-                <td><input style="margin-left: 12rem" required type="date" name="data_inicio" id="form.data_inicio"></td>
+                <td><input style="margin-left: 1rem" required type="date" name="data_inicio" id="form.data_inicio"></td>
+            </div>
+            </div>
+            <div  style="display: flex; gap: 10px">
+            <div class="mb-3">
+                <td><h5 style="font-size: 1.1rem; text-align: center">Data Final:</h5></td>
             </div>
             <div class="mb-3">
-                <td><h5 style="font-size: 1rem; text-align: center">Data Final</h5></td>
+                <td><input style="margin-left: 1rem" required type="date" name="data_final" id="form.data_final"></td>
             </div>
-            <div class="mb-3">
-                <td><input style="margin-left: 12rem" required type="date" name="data_final" id="form.data_final"></td>
             </div>
         </div>
             <script src="{% static 'requerido.js' %}"></script>

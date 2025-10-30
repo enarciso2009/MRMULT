@@ -2,75 +2,96 @@
 
 {% load static %}
 
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Módulo Refeitorio</title>
+    <title>Relatório de Refeições Totalizadas</title>
     <link rel="icon" type="image/x-icon" href="{% static 'refeicao.png' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.css' %}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        h4 {
+            margin-top: 30px;
+            color: #0d6efd;
+        }
+        table {
+            width: 100%;
+            margin-botto,: 20px;
+        }
+        th {
+            background-color: #0d6efd;
+            color: white;
+            text-align: center;
+        }
+        td, th {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .total-geral {
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #198754;
+            margin-top: 30px;
+        }
+        .buttons {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .buttons a, .buttons buttom {
+            margin: 0 10px;
+        }
+
+    </style>
 </head>
 <body>
 
-<h2>Refeições Totalizado por Tipos de Refeicao</h2>
+        <h2>Refeições Totalizado por Tipos de Refeicao</h2>
+        <div class="container">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Refeição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in total_eventos %}
+                    <tr>
+                        <td>{{ item.4 }}</td>
+                        <td>{{ item.0 }}</td>
+                        <td class="text-center">{{ item.1 }}</td>
+                        <td class="text-end">{{ item.2 }}</td>
+                        <td class="text-end">{{ item.3 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-                    <table class="table table-hover" width="100%" border="1">
-                        <colgroup>
-                            <col width="10%">
-                            <col width="30%">
-                            <col width="30%">
-                            <col width="20%">
-                            <col width="10%">
+        <div class="total-geral">
+            Total Geral: {{ tot_geral }}
+        </div>
+        <div class="buttons">
+                <a href=""> <button type="submit" name="voltar" class="btn btn-secondary">Voltar</button></a>
+                <button onclick="window.print()" name="imprimir" class="btn btn-success">Imprimir</button>
+        </div>
+    </div>
 
-                        </colgroup>
-                        <thead>
-                            <tr class="table-success">
-                                <td><b>Tipo de Refeição</b></td>
-                                <td><b>Quantidade</b></td>
-                                <td><b>valor da Refeicao</b></td>
-                                <td><b>Total</b></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                              <tr class="table-warning">
-                                {% for e in eve_0 %}
-                                     <td>{{ e }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr class="table-warning">
-                                {% for e in eve_1 %}
-                                     <td>{{ e }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr class="table-warning">
-                                {% for e in eve_2 %}
-                                     <td>{{ e }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr class="table-warning">
-                                {% for e in eve_3 %}
-                                     <td>{{ e }}</td>
-                                {% endfor %}
-                            </tr>
-                                  <tr class="table-warning">
-                                {% for e in eve_4 %}
-                                     <td>{{ e }}</td>
-                                {% endfor %}
-                            </tr>
-                             <tr class="table-warning">
-                            <td>Total Geral</td>
-                            <td> </td>
-                            <td> </td>
-                            <td> {{ tot_geral }} </td>
-
-
-
-
-                       </tbody>
-                    </table>
-
-                        <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>
-                        <button onclick="window.print()" name="imprimir" class="btn btn-link disable">Imprimir</button>
 </body>
 </html>

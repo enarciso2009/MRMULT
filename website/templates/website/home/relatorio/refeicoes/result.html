@@ -12,19 +12,18 @@
 </head>
 <body>
 
-<h2 style="text-align: center;">Evento de Refeições de Funcionários</h2>
-<h5 style="text-align: right;">período {{data_inicial|date:"d/m/Y"}} à {{data_final|date:"d/m/Y"}}</h5>
+<h2>Evento de Refeições de Funcionários</h2>
+<h2>Periodo: {{ data_inicial }} - {{ data_final }}</h2>
 
                     <table class="table table-hover" width="100%" border="1">
                         <colgroup>
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
-                            <col width="12%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
                         </colgroup>
                         <thead>
                             <tr class="table-success">
@@ -41,6 +40,8 @@
                             </tr>
                         </thead>
                         <tbody>
+
+
                                   {% for e in eventos_por_refeicao %}
                                     <tr class="table-warning">
                                         <td>{{ e.matricula }}</td>
@@ -56,7 +57,6 @@
                                   {% empty %}
                                   <tr><td colspan="5">Nenhum evento encontrado</td> </tr>
                                     {%endfor %}
-
                         </tbody>
                     </table>
                     <a href=""> <button type="submit" name="voltar" class="btn btn-link disable">Voltar</button></a>

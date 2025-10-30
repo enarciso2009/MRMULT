@@ -2,36 +2,27 @@ import datetime
 from doctest import REPORT_ONLY_FIRST_FAILURE
 
 from django import forms
-from website.models import Equipamento, Refeicao, Funcionario, Grupo_Refeicao, Visitante, Evento, Parametro, Terceiro, Inter_grup_ref
+from website.models import Usuario, Equipamento, Refeicao, Funcionario, Grupo_Refeicao, Visitante, Evento, Parametro, Terceiro, Inter_grup_ref
 
 
 # Forms Funcionario
 class FuncionarioForm(forms.ModelForm):
     class Meta:
         model = Funcionario
-        '''
-        fields = [
-            'matricula', 'nome', 'admissao', 'departamento', 'centro_de_custo', 'cargo', 'documento', 'credencial', 'grup_ref', 'ativo', 'empresa'
-        ]
-        '''
         exclude = ['grup_ref', 'empresa'] # vamos preencher manualmente
 
  # Forms Visitante
 class VisitanteForm(forms.ModelForm):
     class Meta:
         model = Visitante
-        fields = [
-            'matricula', 'nome', 'documento', 'credencial', 'data_inicio', 'data_fim', 'hora_inicio', 'hora_fim', 'func', 'grup_ref', 'motivo', 'empresa'
+        exclude = ['grup_ref', 'empresa'] # vamos preencher manualmente
 
-        ]
 # Forms Terceiros
 class TerceiroForm(forms.ModelForm):
     class Meta:
         model = Terceiro
-        fields = [
-            'matricula', 'nome', 'empresa', 'documento', 'credencial', 'data_inicio', 'data_fim', 'hora_inicio', 'hora_fim', 'func', 'grup_ref', 'empresa'
+        exclude = ['grup_ref', 'empresa'] # vamos preencher manualmente
 
-        ]
 
 # Forms Equipamento
 class EquipamentoForm(forms.ModelForm):
@@ -79,3 +70,9 @@ class ParametroForm(forms.ModelForm):
             'id_param', 'nome', 'mod_padrao_usu', 'mod_credito_usu', 'mod_padrao_visi', 'mod_credito_visi', 'empresa'
         ]
 
+class UsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = [
+            'id_user', 'nome','email', 'usuario', 'senha', 'permissao', 'empresa'
+        ]

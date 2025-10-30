@@ -26,6 +26,7 @@
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
+                            <col width="10%">
 
                         </colgroup>
                         <thead>
@@ -41,6 +42,7 @@
                                 <td><b>Documento</b></td>
                                 <td><b>Credencial</b></td>
                                 <td><b>Ativo</b></td>
+                                <td><b>Empresa</b></td>
                             </tr>
                         </thead>
                         <tbody>
@@ -56,6 +58,7 @@
                                         <td>{{ e.documento }}</td>
                                         <td>{{ e.credencial }}</td>
                                         <td>{{ e.ativo }}</td>
+                                        <td>{{ e.empresa_id }}</td>
                                     </tr>
                                 {%endfor %}
                        </tbody>

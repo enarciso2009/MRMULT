@@ -111,9 +111,9 @@
                 <td><h5 style="font-size: 1rem; text-align: center">Grupo de Refeições</h5></td>
            </div>
            <div class="mb-3">
-                <select  style="text-align: center; padding:0.4rem 25rem 0.1rem 9rem" id="grup_ref" name="grup_ref" required>
-                            {% for g in grupo_refeicao %}
-                              <option value="{{ g.id_grup_ref }}"> {{g.nome}}</option>
+                <select  style="text-align: center; padding:0.4rem 25rem 0.5rem 9rem" id="grupos_refeicao" name="grupos_refeicao" required values={{grupos_refeicao}}>
+                            {% for g in grupos_refeicao %}
+                              <option value="{{g.id_grup}}"> {{g.id_grup }} - {{ g.nome}}</option>
                             {%endfor%}
                 </select>
            </div>

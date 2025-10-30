@@ -99,15 +99,24 @@
                 <div class="mb-3">
                     <td><input style="margin-left: 0.5rem" type="password" name="password" maxlength="50" id="password" placeholder="Password" size="30"></td>
                 </div>
+                <div class="mb-3">
+                    <label>Grupo de Acesso:</label>
+                    <select name="grupo" class="form-select">
+                        <option value="">Selecione um grupo</option>
+                        {% for g in grupo %}
+                            <option value="{{ g.id }}">{{ g.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
             </div>
                   <br>
                   <br>
 
-                <button style="margin-left: 50rem" type="incluir" value="incluir" name="incluir" class="btn btn-success">Incluir</button>
-                <button type="alterar" value="alterar" name="alterar" class="btn btn-warning">Alterar</button>
-                <button type="excluir" value="excluir" name="excluir" class="btn btn-outline-danger">Excluir</button>
-                <button type="consulta" value="consultar" name="consultar" class="btn btn-primary btn-sm">Consultar</button>
+                <button style="margin-left: 50rem" type="submit" value="incluir" name="status" class="btn btn-success">Incluir</button>
+                <button type="submit" value="alterar" name="status" class="btn btn-warning">Alterar</button>
+                <button type="submit" value="excluir" name="status" class="btn btn-outline-danger">Excluir</button>
+                <button type="submit" value="consultar" name="status" class="btn btn-primary btn-sm">Consultar</button>
 
         </form>
     </body>
