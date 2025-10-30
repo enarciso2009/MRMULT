@@ -16,8 +16,15 @@ from django.urls import reverse_lazy
 import os
 import dj_database_url
 from pathlib import Path
+
+from psycopg2.errorcodes import DATABASE_DROPPED
+from tutorial.settings import BASE_DIR, SECRET_KEY
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+from django.core.management.utils import get_random_secret_key
+SECRET_KEY = os.environ.get("SECRET_KEY", get_random_secret_key())
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,8 +37,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #DEBUG = True
 # CONFIGURAÇÕES DE SEGURANÇA
 TOKEN = os.getenv("GITHUB_TOKEN")
+
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = ["*"]
+
+#Hosts
+ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
 # quando for usar outros computadores acessando esta maquina colocar o ip local da maquina e executar o manage.py com o comando python manage.py runserver 0.0.0.0:8080
 
 # Application definition
@@ -49,8 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Serve arquivos estaticos diretamente
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #serve arquivos staticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -64,7 +73,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"], #se tiver templates globais
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,6 +91,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
     DATABASES = {
@@ -136,7 +147,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / "website" / "static"]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
@@ -144,9 +155,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 
 #LOGIN_URL = reverse_lazy('login:login')
 #LOGIN_REDIRECT_URL = reverse_lazy('login:login')
