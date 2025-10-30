@@ -1,0 +1,10 @@
+[build]
+builder = "railpack/python"
+
+[install]
+# força a instalação global
+commands = [
+  "pip install --upgrade pip",
+  "pip install gunicorn"
+]
+
