@@ -1,4 +1,4 @@
-#!/home/everton/PycharmProjects/MR/.venv/bin/python3
+#!/home/everton/PycharmProjects/PythonProject1/MRMULT/.venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

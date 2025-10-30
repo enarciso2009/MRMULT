@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from django.conf.global_settings import LOGIN_REDIRECT_URL
+from django.conf.global_settings import LOGIN_REDIRECT_URL, STATICFILES_DIRS
 from django.urls import reverse_lazy
-
+import os
+import dj_database_url
+from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,11 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(_m4@qg9s33^^0y25nnln7l(9bt)wujn=8#3ej6#9k13tdk!ql'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+#DEBUG = True
+# CONFIGURAÇÕES DE SEGURANÇA
+TOKEN = os.getenv("GITHUB_TOKEN")
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = ["*"]
 # quando for usar outros computadores acessando esta maquina colocar o ip local da maquina e executar o manage.py com o comando python manage.py runserver 0.0.0.0:8080
 
@@ -45,6 +49,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Serve arquivos estaticos diretamente
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,16 +83,21 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mod_ref',
-        'USER': 'postgres',
-        'PASSWORD': '323232',
-        'HOST': 'localhost',
-        'PORT': 5432,
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'mod_ref',
+            'USER': 'postgres',
+            'PASSWORD': '323232',
+            'HOST': 'localhost',
+            'PORT': 5432,
+        }
+    }
 
 
 # Password validation
@@ -123,8 +134,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -140,3 +154,6 @@ MEDIA_URL = 'media/'
 LOGIN_URL = reverse_lazy('website:login')
 LOGIN_REDIRECT_URL = reverse_lazy('website:home')
 LOGOUT_REDIRECT_URL = reverse_lazy('website:login')
+
+
+
