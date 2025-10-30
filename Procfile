@@ -1,4 +1,5 @@
-web: python -m gunicorn core.wsgi --bind 0.0.0.0:8000
+web: python -m gunicorn core.wsgi:application --bind 0.0.0.0:8000
+
 
 
 

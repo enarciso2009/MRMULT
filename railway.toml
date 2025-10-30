@@ -2,9 +2,14 @@
 builder = "railpack/python"
 
 [install]
-# força a instalação global
 commands = [
+  "python -m venv /app/venv",
+  "source /app/venv/bin/activate",
   "pip install --upgrade pip",
+  "pip install -r requirements.txt",
   "pip install gunicorn"
 ]
+
+[deploy]
+start = "python -m gunicorn core.wsgi:application --bind 0.0.0.0:8000"
 
