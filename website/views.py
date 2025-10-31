@@ -45,7 +45,7 @@ status = ''
 
 # Tela de Cadastro de Equipamentos
 #@login_required
-@grupo_required(['Administrador', 'Operador'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def cria_equipamento(requisicao: HttpRequest):
     print(f'este é o GET = {requisicao.method == "GET"}')
     if requisicao.method == 'GET':
@@ -1114,7 +1114,7 @@ def cria_busca(requisicao: HttpRequest):
 # Relatorios
 
 # monitoramento
-@login_required
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def monitoramento(requisicao: HttpRequest):
     #print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -1337,7 +1337,7 @@ def relatorio_refeicoes(requisicao: HttpRequest):
 
 
 # Relatorio refeições totalizado por funcionario
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def tot_func(requisicao: HttpRequest):
     user = requisicao.user
     if user.is_superuser:
@@ -1497,7 +1497,7 @@ def tot_func(requisicao: HttpRequest):
     )
 
 # Relatorios Refeições Totalizadas
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def tot_refeicao(requisicao: HttpRequest):
     user = requisicao.user
     empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
@@ -1568,7 +1568,7 @@ def tot_refeicao(requisicao: HttpRequest):
     )
 
 # Sobre
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def sobre(requisicao: HttpRequest):
     print(f"este é o GET = {requisicao.method == 'GET'}")
     if requisicao.method == 'GET':
@@ -1839,7 +1839,7 @@ def cria_usuario(requisicao: HttpRequest):
             )
 
 # Relatorio de Funcionarios
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def relat_funcionarios(requisicao: HttpRequest):
     user = requisicao.user
     empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
@@ -1860,7 +1860,7 @@ def relat_funcionarios(requisicao: HttpRequest):
         }
         return render(requisicao, template_name='website/home/relatorio/funcionarios/funcionarios.html', context=context)
 
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def relat_visitantes(requisicao: HttpRequest):
     user = requisicao.user
     empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
@@ -1880,7 +1880,7 @@ def relat_visitantes(requisicao: HttpRequest):
         return render(requisicao, template_name='website/home/relatorio/visitantes/visitantes.html', context=context)
 
 #Relatorio de Terceiros
-@grupo_required(['Administrador', 'Operador', 'Consultar'])
+@grupo_required(['Administrador', 'Operador', 'Consulta'])
 def relat_terceiros(requisicao: HttpRequest):
     user = requisicao.user
     empresa_usuario = getattr(user.profile, 'empresa', None) if not user.is_superuser else None
