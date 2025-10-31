@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: mrmult
+    name: MRMULT
     env: python
+    pythonVersion: 3.12.7
     plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn core.wsgi:application"
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.7
+  
 
