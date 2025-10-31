@@ -41,7 +41,7 @@ TOKEN = os.getenv("GITHUB_TOKEN")
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 #Hosts
-ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['mrmult-7mqy.onrender.com', 'localhost', '127.0.0.1']
 # quando for usar outros computadores acessando esta maquina colocar o ip local da maquina e executar o manage.py com o comando python manage.py runserver 0.0.0.0:8080
 
 # Application definition
