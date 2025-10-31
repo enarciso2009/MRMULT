@@ -47,10 +47,10 @@
                                         <td>{{ e.nome }}</td>
                                         <td>{{ e.data|date:"d/m/Y" }}</td>
                                         <td>{{ e.hora }}</td>
-                                        <td>{{ e.equip_nome}}</td>
-                                        <td>{{ e.ref_nome }}</td>
-                                        <td>{{ e.ref_valor|floatformat:2 }}</td>
-                                        <td>{{ e.empresa_id }}</td>
+                                        <td>{{ e.nome_equipamento}}</td>
+                                        <td>{{ e.tipo_refeicao }}</td>
+                                        <td>{{ e.valor|floatformat:2 }}</td>
+                                        <td>{{ e.empresa }}</td>
 
                                     </tr>
                                   {% empty %}

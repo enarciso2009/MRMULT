@@ -1290,11 +1290,24 @@ def relatorio_refeicoes(requisicao: HttpRequest):
 
                 for refeicao in refeicoes:
                    for e in eventos:
+                       print(f'este é o e: {e}')
+                       print(f'este é o refeicao: {refeicao}')
                        print(f'comparando {refeicao.hora_inicio} - {e.hora} - {refeicao.hora_fim}')
                        if refeicao.hora_inicio <= e.hora <= refeicao.hora_fim:
-                           eventos_por_refeicao.append(e)
+                           eventos_por_refeicao.append({
+                               'id': e.id,
+                               'matricula': e.matricula,
+                               'nome': e.nome,
+                               'data': e.data,
+                               'hora': e.hora,
+                               'nome_equipamento': e.equip_nome,
+                               'tipo_refeicao': refeicao.nome,
+                               'valor': refeicao.valor,
+                               'empresa':e.empresa_id
+                           })
+
                 print(f'este é o eventos encontrados: {eventos_por_refeicao}')
-                eventos_por_refeicao = list({eventos.id: eventos for eventos in eventos_por_refeicao}.values())
+                eventos_por_refeicao = list({eventos['id']: eventos for eventos in eventos_por_refeicao}.values())
 
                 print('---RESULTADOS---')
                 print(f'Refeicoes info: {refeicoes_info}')
@@ -1310,8 +1323,8 @@ def relatorio_refeicoes(requisicao: HttpRequest):
                     'eventos_por_refeicao': eventos_por_refeicao,
                     'data_inicial': data_inicial_fmt,
                     'data_final': data_final_fmt,
-                    'ref_nome': refeicao.nome,
-                    'ref_valor': refeicao.valor,
+                    'tipo_refeicao': refeicao.nome,
+                    'valor': refeicao.valor,
 
                 }
 
